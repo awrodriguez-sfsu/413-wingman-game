@@ -12,18 +12,19 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
 import javax.swing.JApplet;
 
+import projectiles.PrimaryWeapon;
+import actors.Enemy;
+import actors.MainActor;
+import background.Island;
 import enums.EnemyType;
 import enums.IslandType;
-import projectiles.WingmanBullet;
-import actors.Enemy;
-import actors.Wingman;
-import background.Island;
 
 /**
  * @author Anthony Rodriguez
@@ -41,6 +42,9 @@ public class GameClass extends JApplet implements Runnable, KeyListener {
 	private int height = 600;
 	private int move = 1;
 
+	public static HashMap<String, Image> images = new HashMap<String, Image>();
+	public static HashMap<String, Image[]> imageArrays = new HashMap<String, Image[]>();
+
 	private Image backgroundImage, island1Image, island2Image, island3Image, wingmanBulletImage;
 	private Image[] wingmanImageArray, enemy1Image, enemy2Image, enemy3Image, enemy4Image;
 
@@ -51,7 +55,7 @@ public class GameClass extends JApplet implements Runnable, KeyListener {
 	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 	private ArrayList<Island> islands = new ArrayList<Island>();
 
-	private Wingman wingman;
+	private MainActor wingman;
 
 	@Override
 	public void init() {
@@ -64,7 +68,7 @@ public class GameClass extends JApplet implements Runnable, KeyListener {
 
 		setUpImages();
 
-		wingman = new Wingman(wingmanImageArray, wingmanBulletImage, width, height);
+		wingman = new MainActor(wingmanImageArray, wingmanBulletImage, width / 2, height, this);
 	}
 
 	@Override
@@ -132,26 +136,33 @@ public class GameClass extends JApplet implements Runnable, KeyListener {
 				}
 			}
 
+			wingman.update(width, height);
+			wingman.draw(graphics2d, this);
+			wingman.drawCollisionRect(graphics2d, this);
+
 			if (enemies.size() < 3) {
 				generateEnemies(generator.nextInt(( maxEnemies - minEnemies ) + 1) + minEnemies);
 			} else {
 				for (int i = 0; i < enemies.size(); i++) {
-					Enemy e = (Enemy) enemies.get(i);
-					if (e.isVisible()) {
-						e.update(width, height);
-						e.draw(graphics2d, this);
+					Enemy enemy = (Enemy) enemies.get(i);
+					if (enemy.isVisible()) {
+						enemy.update(width, height);
+						enemy.draw(graphics2d, this);
+						enemy.drawCollisionRect(graphics2d, this);
+
+						// System.out.println(wingman.rectangleWings.intersects(enemy.rectangleWings));
+						if (wingman.rectangleWings.intersects(wingman.rectangleBodyTop)) {
+							enemy.explode();
+						}
 					} else {
 						enemies.remove(i);
 					}
 				}
 			}
 
-			wingman.update(width, height);
-			wingman.draw(graphics2d, this);
-
-			ArrayList<WingmanBullet> projectiles = wingman.getProjectiles();
+			ArrayList<PrimaryWeapon> projectiles = wingman.getMainWeaponShots();
 			for (int i = 0; i < projectiles.size(); i++) {
-				WingmanBullet b = (WingmanBullet) projectiles.get(i);
+				PrimaryWeapon b = (PrimaryWeapon) projectiles.get(i);
 				if (b.isVisible()) {
 					b.moveUp();
 					b.update(width, height);
@@ -160,6 +171,7 @@ public class GameClass extends JApplet implements Runnable, KeyListener {
 					projectiles.remove(i);
 				}
 			}
+
 		}
 	}
 
@@ -213,6 +225,15 @@ public class GameClass extends JApplet implements Runnable, KeyListener {
 	private void setUpImages() {
 		backgroundImage = getSprite("water.png");
 
+		island1Image = getSprite("island1.png");
+		island2Image = getSprite("island2.png");
+		island3Image = getSprite("island3.png");
+
+		images.put("background", backgroundImage);
+		images.put("island1", island1Image);
+		images.put("island2", island2Image);
+		images.put("island3", island3Image);
+
 		// Wingman Image Animation
 		wingmanImageArray = new Image[3];
 		wingmanImageArray[0] = getSprite("myplane_1.png");
@@ -240,9 +261,11 @@ public class GameClass extends JApplet implements Runnable, KeyListener {
 		enemy4Image[1] = getSprite("enemy4_2.png");
 		enemy4Image[2] = getSprite("enemy4_3.png");
 
-		island1Image = getSprite("island1.png");
-		island2Image = getSprite("island2.png");
-		island3Image = getSprite("island3.png");
+		imageArrays.put("wingman", wingmanImageArray);
+		imageArrays.put("enemy1", enemy1Image);
+		imageArrays.put("enemy2", enemy2Image);
+		imageArrays.put("enemy3", enemy3Image);
+		imageArrays.put("enemy4", enemy4Image);
 	}
 
 	public static Dimension getDimension() {
@@ -272,7 +295,7 @@ public class GameClass extends JApplet implements Runnable, KeyListener {
 					break;
 			}
 
-			Enemy enemy = new Enemy(enemyImageArray, enemyType, generator, dimension);
+			Enemy enemy = new Enemy(enemyImageArray, enemyType, generator, dimension, this);
 			this.enemies.add(enemy);
 		}
 	}
@@ -296,7 +319,7 @@ public class GameClass extends JApplet implements Runnable, KeyListener {
 					break;
 			}
 
-			Island island = new Island(islandImage, islandType, generator, dimension);
+			Island island = new Island(islandImage, islandType, generator, dimension, this);
 			this.islands.add(island);
 		}
 	}
@@ -315,9 +338,9 @@ public class GameClass extends JApplet implements Runnable, KeyListener {
 				}
 
 				if (keysPressed.contains(KeyEvent.VK_LEFT)) {
-					wingman.moveDiagUpLeft();
+					wingman.moveUpLeft();
 				} else if (keysPressed.contains(KeyEvent.VK_RIGHT)) {
-					wingman.moveDiagUpRight();
+					wingman.moveUpRight();
 				} else {
 					wingman.moveUp();
 				}
@@ -334,9 +357,9 @@ public class GameClass extends JApplet implements Runnable, KeyListener {
 				}
 
 				if (keysPressed.contains(KeyEvent.VK_LEFT)) {
-					wingman.moveDiagDownLeft();
+					wingman.moveDownLeft();
 				} else if (keysPressed.contains(KeyEvent.VK_RIGHT)) {
-					wingman.moveDiagDownRight();
+					wingman.moveDownRight();
 				} else {
 					wingman.moveDown();
 				}
@@ -353,9 +376,9 @@ public class GameClass extends JApplet implements Runnable, KeyListener {
 				}
 
 				if (keysPressed.contains(KeyEvent.VK_UP)) {
-					wingman.moveDiagUpLeft();
+					wingman.moveUpLeft();
 				} else if (keysPressed.contains(KeyEvent.VK_DOWN)) {
-					wingman.moveDiagDownLeft();
+					wingman.moveDownLeft();
 				} else {
 					wingman.moveLeft();
 				}
@@ -372,9 +395,9 @@ public class GameClass extends JApplet implements Runnable, KeyListener {
 				}
 
 				if (keysPressed.contains(KeyEvent.VK_UP)) {
-					wingman.moveDiagUpRight();
+					wingman.moveUpRight();
 				} else if (keysPressed.contains(KeyEvent.VK_DOWN)) {
-					wingman.moveDiagDownRight();
+					wingman.moveDownRight();
 				} else {
 					wingman.moveRight();
 				}
@@ -390,10 +413,9 @@ public class GameClass extends JApplet implements Runnable, KeyListener {
 					keysPressed.add(event.getKeyCode());
 				}
 
-				wingman.firePrimary();
-				break;
-			default:
-				System.out.println(event.getKeyChar());
+				if (wingman.canFire()) {
+					wingman.firePrimary();
+				}
 				break;
 		}
 	}
@@ -417,9 +439,6 @@ public class GameClass extends JApplet implements Runnable, KeyListener {
 			case KeyEvent.VK_SPACE:
 				keysPressed.remove(event.getKeyCode());
 				wingman.setCanFire(true);
-				break;
-			default:
-				System.out.println(event.getKeyChar());
 				break;
 		}
 

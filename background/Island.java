@@ -2,6 +2,7 @@ package background;
 
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.image.ImageObserver;
 import java.util.Random;
 
 import wingman.GameObject;
@@ -22,8 +23,8 @@ public class Island extends GameObject {
 	 * @param x_pos
 	 * @param y_pos
 	 */
-	public Island(Image image, IslandType islandType, Random generator, Dimension dimension) {
-		super(image, ( Math.abs(generator.nextInt() % dimension.width) ), -( Math.abs(generator.nextInt(( 1000 - 10 ) + 1) + 10) ));
+	public Island(Image image, IslandType islandType, Random generator, Dimension dimension, ImageObserver observer) {
+		super(image, ( Math.abs(generator.nextInt() % dimension.width) ), -( Math.abs(generator.nextInt(( 1000 - 10 ) + 1) + 10) ), observer);
 
 		this.dimension = dimension;
 	}

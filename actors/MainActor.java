@@ -1,28 +1,29 @@
 package actors;
 
 import java.awt.Image;
-import java.util.ArrayList;
+import java.awt.image.ImageObserver;
 
-import projectiles.WingmanBullet;
+import projectiles.PrimaryWeapon;
 
 /**
  * @author Anthony Rodriguez
  *
  */
-public class Wingman extends Actors {
+public class MainActor extends Actor {
+
+	private ImageObserver observer;
 
 	private final float MOVEMENT_SPEED = 3.5f;
-	private float x_speed = 0;
-	private float y_speed = 0;
 
-	private Image bullet;
-
-	private ArrayList<WingmanBullet> projectiles = new ArrayList<WingmanBullet>();
-
-	public Wingman(Image[] image, Image bullet, int width, int height) {
-		super(image, width / 2, height);
-		this.bullet = bullet;
-		this.canFire = true;
+	/**
+	 * @param imageArray
+	 * @param x_pos
+	 * @param y_pos
+	 */
+	public MainActor(Image[] imageArray, Image primaryWeapon, int x_pos, int y_pos, ImageObserver observer) {
+		super(imageArray, x_pos, y_pos, observer);
+		this.observer = observer;
+		this.primaryWeapon = primaryWeapon;
 	}
 
 	@Override
@@ -32,29 +33,37 @@ public class Wingman extends Actors {
 			currentImage = 0;
 		}
 
-		if (isMovingLeft || isMovingRight) {
+		if (isMovingLeft() || isMovingRight()) {
 			x_pos += x_speed;
 		}
 
-		if (isMovingUp || isMovingDown) {
+		if (isMovingUp() || isMovingDown()) {
 			y_pos += y_speed;
 		}
 
-		if (x_pos <= 5) {
-			x_pos = 5;
+		if (x_pos <= leftEdge + 5) {
+			x_pos = leftEdge + 5;
 		}
 
-		if (x_pos >= width - 70) {
-			x_pos = width - 70;
+		if (x_pos >= width - rightEdge + 5) {
+			x_pos = width - rightEdge + 5;
 		}
 
-		if (y_pos <= 0) {
-			y_pos = 0;
+		if (y_pos <= topEdge + 5) {
+			y_pos = topEdge + 5;
 		}
 
-		if (y_pos >= height - 70) {
-			y_pos = height - 70;
+		if (y_pos >= height - bottomEdge + 5) {
+			y_pos = height - bottomEdge + 5;
 		}
+
+		rectangleWings.setRect(x_pos + 2, y_pos + 21, 59, 13);
+		rectangleBodyTop.setRect(x_pos + 17, y_pos + 12, 31, 7);
+		rectangleBodyBottom.setRect(x_pos + 13, y_pos + 34, 37, 22);
+
+		rectangleWings.setBounds(rectangleWings);
+		rectangleBodyTop.setBounds(rectangleBodyTop);
+		rectangleBodyBottom.setBounds(rectangleBodyBottom);
 	}
 
 	@Override
@@ -98,7 +107,7 @@ public class Wingman extends Actors {
 	}
 
 	@Override
-	public void moveDiagUpLeft() {
+	public void moveUpLeft() {
 		x_speed = -MOVEMENT_SPEED;
 		y_speed = -MOVEMENT_SPEED;
 
@@ -109,7 +118,7 @@ public class Wingman extends Actors {
 	}
 
 	@Override
-	public void moveDiagUpRight() {
+	public void moveUpRight() {
 		x_speed = MOVEMENT_SPEED;
 		y_speed = -MOVEMENT_SPEED;
 
@@ -120,7 +129,7 @@ public class Wingman extends Actors {
 	}
 
 	@Override
-	public void moveDiagDownLeft() {
+	public void moveDownLeft() {
 		x_speed = -MOVEMENT_SPEED;
 		y_speed = MOVEMENT_SPEED + 1;
 
@@ -131,7 +140,7 @@ public class Wingman extends Actors {
 	}
 
 	@Override
-	public void moveDiagDownRight() {
+	public void moveDownRight() {
 		x_speed = MOVEMENT_SPEED;
 		y_speed = MOVEMENT_SPEED + 1;
 
@@ -139,30 +148,25 @@ public class Wingman extends Actors {
 		setMovingDown(true);
 		setMovingLeft(false);
 		setMovingRight(true);
-	}
-
-	@Override
-	public void stop() {
-		x_speed = 0;
-		y_speed = 0;
 	}
 
 	@Override
 	public void firePrimary() {
-		if (canFire) {
-			WingmanBullet b = new WingmanBullet(bullet, x_pos, y_pos);
-			projectiles.add(b);
-			canFire = false;
+		if (canFire()) {
+			PrimaryWeapon pShot = new PrimaryWeapon(primaryWeapon, x_pos, y_pos, observer);
+			primaryWeaponShots.add(pShot);
+			setCanFire(false);
 		}
+	}
+
+	@Override
+	public void fireSecondary() {
+		System.out.println("Fire Secondary Weapon");
 	}
 
 	@Override
 	public void explode() {
 		System.out.println("Player.explode()");
-	}
-
-	public ArrayList<WingmanBullet> getProjectiles() {
-		return projectiles;
 	}
 
 	@Override

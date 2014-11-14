@@ -1,6 +1,7 @@
 package projectiles;
 
 import java.awt.Image;
+import java.awt.image.ImageObserver;
 
 import wingman.GameObject;
 
@@ -8,13 +9,13 @@ import wingman.GameObject;
  * @author Anthony Rodriguez
  *
  */
-public class WingmanBullet extends GameObject {
+public class SecondaryWeapon extends GameObject {
 
 	private final int MOVEMENT_SPEED = 5;
 	private int y_speed = 0;
 
-	public WingmanBullet(Image image, int x_pos, int y_pos) {
-		super(image, x_pos + 16, y_pos - 10);
+	public SecondaryWeapon(Image image, int x_pos, int y_pos, ImageObserver observer) {
+		super(image, x_pos + 16, y_pos - 10, observer);
 	}
 
 	@Override

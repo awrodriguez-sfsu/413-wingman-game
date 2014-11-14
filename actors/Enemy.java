@@ -2,21 +2,23 @@ package actors;
 
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.image.ImageObserver;
 import java.util.Random;
 
 import wingman.GameClass;
-import wingman.GameObject;
 import enums.EnemyType;
 
 /**
  * @author Anthony Rodriguez
  *
  */
-public class Enemy extends GameObject {
+public class Enemy extends Actor {
 
-	private float y_speed = 2f;
+	private final float MOVEMENT_SPEED;
 
 	private Dimension dimension;
+
+	private Random generator;
 
 	private EnemyType enemyType;
 
@@ -28,23 +30,25 @@ public class Enemy extends GameObject {
 	 * @param x_pos
 	 * @param y_pos
 	 */
-	public Enemy(Image[] imageArray, EnemyType enemyType, Random generator, Dimension dimension) {
-		super(imageArray, ( Math.abs(generator.nextInt() % dimension.width) ), -( Math.abs(generator.nextInt(( 700 - 100 ) + 1) + 100) ));
+	public Enemy(Image[] imageArray, EnemyType enemyType, Random generator, Dimension dimension, ImageObserver observer) {
+		super(imageArray, ( Math.abs(generator.nextInt() % dimension.width) ), -( Math.abs(generator.nextInt(( 700 - 100 ) + 1) + 100) ), observer);
 		if (enemyType == EnemyType.ENEMY4) {
 			y_pos = -y_pos + dimension.height;
-			y_speed = 1f;
+			MOVEMENT_SPEED = 1f;
+		} else {
+			MOVEMENT_SPEED = 2f;
 		}
 
 		this.dimension = dimension;
+		this.generator = generator;
 		this.enemyType = enemyType;
 	}
 
 	public boolean isVisible() {
-		switch (enemyType) {
-			case ENEMY4:
-				return !( x_pos > dimension.width - 32 || y_pos < -32 || x_pos < 0 );
-			default:
-				return !( x_pos > dimension.width - 32 || y_pos > dimension.height || x_pos < 0 );
+		if (enemyType == EnemyType.ENEMY4) {
+			return !( x_pos > dimension.width - rightEdge || y_pos < -bottomEdge || x_pos < leftEdge );
+		} else {
+			return !( x_pos > dimension.width - rightEdge || y_pos > dimension.height || x_pos < leftEdge );
 		}
 	}
 
@@ -52,18 +56,103 @@ public class Enemy extends GameObject {
 	public void update(int width, int height) {
 		dimension = GameClass.getDimension();
 
+		int action = generator.nextInt(100) + 1;
+
 		currentImage++;
 		if (currentImage > 2) {
 			currentImage = 0;
 		}
 
-		switch (enemyType) {
-			case ENEMY4:
-				y_pos -= y_speed;
-				break;
-			default:
-				y_pos += y_speed;
-				break;
+		if (isMovingDown()) {
+			y_pos += MOVEMENT_SPEED;
 		}
+
+		if (isMovingUp()) {
+			y_pos -= MOVEMENT_SPEED;
+		}
+
+		if (enemyType == EnemyType.ENEMY4) {
+			rectangleWings.setRect(x_pos, y_pos + 7, 32, 10);
+			rectangleBodyTop.setRect(x_pos + 9, y_pos, 14, 32);
+		} else {
+			rectangleWings.setRect(x_pos, y_pos + 15, 32, 10);
+			rectangleBodyTop.setRect(x_pos + 9, y_pos, 14, 32);
+		}
+
+		rectangleWings.setBounds(rectangleWings);
+		rectangleBodyTop.setBounds(rectangleBodyTop);
+	}
+
+	@Override
+	public boolean isMovingDown() {
+		return !( enemyType == EnemyType.ENEMY4 );
+	}
+
+	@Override
+	public boolean isMovingUp() {
+		return ( enemyType == EnemyType.ENEMY4 );
+	}
+
+	@Override
+	public void moveUp() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void moveDown() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void moveLeft() {
+		x_pos -= MOVEMENT_SPEED;
+	}
+
+	@Override
+	public void moveRight() {
+		x_pos += MOVEMENT_SPEED;
+	}
+
+	@Override
+	public void moveUpLeft() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void moveUpRight() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void moveDownLeft() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void moveDownRight() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void firePrimary() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void fireSecondary() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void explode() {
+		System.out.println("Enemy Explodes");
 	}
 }
