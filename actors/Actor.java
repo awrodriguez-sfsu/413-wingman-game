@@ -4,7 +4,6 @@
 package actors;
 
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.ImageObserver;
 import java.util.ArrayList;
@@ -12,44 +11,93 @@ import java.util.ArrayList;
 import projectiles.PrimaryWeapon;
 import projectiles.SecondaryWeapon;
 import wingman.GameObject;
+import enums.AnimationType;
+import enums.GameObjectType;
 
 /**
- * @author arod
+ * @author Anthony Rodriguez
  *
  */
 public abstract class Actor extends GameObject {
+
+	private Rectangle rectangleWings = new Rectangle(0, 0, 0, 0);
+	private Rectangle rectangleBodyTop = new Rectangle(0, 0, 0, 0);
+	private Rectangle rectangleBodyBottom = new Rectangle(0, 0, 0, 0);
 
 	private boolean isMovingUp;
 	private boolean isMovingDown;
 	private boolean isMovingLeft;
 	private boolean isMovingRight;
-	private boolean canFire = true;
+	private boolean canFirePrimary;
+	private boolean canFireSecondary;
+	private boolean isAlive;
+	private boolean isExploding;
 
-	protected int maxHealth;
-	protected int currentHealth;
-
-	protected float x_speed = 0;
-	protected float y_speed = 0;
-
-	protected Image primaryWeapon;
-	protected Image secondaryWeapon;
-
-	public static Rectangle rectangleWings = new Rectangle(0, 0, 0, 0);
-	public static Rectangle rectangleBodyTop = new Rectangle(0, 0, 0, 0);
-	public static Rectangle rectangleBodyBottom = new Rectangle(0, 0, 0, 0);
+	protected float x_speed;
+	protected float y_speed;
 
 	protected ArrayList<PrimaryWeapon> primaryWeaponShots = new ArrayList<PrimaryWeapon>();
 	protected ArrayList<SecondaryWeapon> secondaryWeaponShots = new ArrayList<SecondaryWeapon>();
 
-	public Actor(String image, int x_pos, int y_pos, ImageObserver observer) {
-		super(image, x_pos, y_pos, observer);
+	public Actor(AnimationType image, GameObjectType type, int x_pos, int y_pos) {
+		super(image, type, x_pos, y_pos);
+		this.isAlive = true;
 	}
 
 	/**
-	 * @return isMovingUp
+	 * @return the isMovingUp
 	 */
 	public boolean isMovingUp() {
 		return isMovingUp;
+	}
+
+	/**
+	 * @return the isMovingDown
+	 */
+	public boolean isMovingDown() {
+		return isMovingDown;
+	}
+
+	/**
+	 * @return the isMovingLeft
+	 */
+	public boolean isMovingLeft() {
+		return isMovingLeft;
+	}
+
+	/**
+	 * @return the isMovingRight
+	 */
+	public boolean isMovingRight() {
+		return isMovingRight;
+	}
+
+	/**
+	 * @return the canFire
+	 */
+	public boolean canFirePrimary() {
+		return canFirePrimary;
+	}
+
+	/**
+	 * @return the canFireSecondary
+	 */
+	public boolean canFireSecondary() {
+		return canFireSecondary;
+	}
+
+	/**
+	 * @return the isAlive
+	 */
+	public boolean isAlive() {
+		return isAlive;
+	}
+
+	/**
+	 * @return the isExploding
+	 */
+	public boolean isExploding() {
+		return isExploding;
 	}
 
 	/**
@@ -60,24 +108,10 @@ public abstract class Actor extends GameObject {
 	}
 
 	/**
-	 * @return isMovingDown
-	 */
-	public boolean isMovingDown() {
-		return isMovingDown;
-	}
-
-	/**
 	 * @param isMovingDown the isMovingDown to set
 	 */
 	public void setMovingDown(boolean isMovingDown) {
 		this.isMovingDown = isMovingDown;
-	}
-
-	/**
-	 * @return isMovingLeft
-	 */
-	public boolean isMovingLeft() {
-		return isMovingLeft;
 	}
 
 	/**
@@ -88,13 +122,6 @@ public abstract class Actor extends GameObject {
 	}
 
 	/**
-	 * @return isMovingRight
-	 */
-	public boolean isMovingRight() {
-		return isMovingRight;
-	}
-
-	/**
 	 * @param isMovingRight the isMovingRight to set
 	 */
 	public void setMovingRight(boolean isMovingRight) {
@@ -102,51 +129,37 @@ public abstract class Actor extends GameObject {
 	}
 
 	/**
-	 * @return the maxHealth
-	 */
-	public int getMaxHealth() {
-		return maxHealth;
-	}
-
-	/**
-	 * @param maxHealth the maxHealth to set
-	 */
-	public void setMaxHealth(int maxHealth) {
-		this.maxHealth = maxHealth;
-	}
-
-	/**
-	 * @return the currentHealth
-	 */
-	public int getCurrentHealth() {
-		return currentHealth;
-	}
-
-	/**
-	 * @param currentHealth the currentHealth to set
-	 */
-	public void setCurrentHealth(int currentHealth) {
-		this.currentHealth = currentHealth;
-	}
-
-	/**
-	 * @return canFire
-	 */
-	public boolean canFire() {
-		return canFire;
-	}
-
-	/**
 	 * @param canFire the canFire to set
 	 */
-	public void setCanFire(boolean canFire) {
-		this.canFire = canFire;
+	public void setCanFirePrimary(boolean canFire) {
+		this.canFirePrimary = canFire;
 	}
 
 	/**
-	 * @return the mainWeaponShots
+	 * @param canFireSecondary the canFireSecondary to set
 	 */
-	public ArrayList<PrimaryWeapon> getMainWeaponShots() {
+	public void setCanFireSecondary(boolean canFireSecondary) {
+		this.canFireSecondary = canFireSecondary;
+	}
+
+	/**
+	 * @param isAlive the isAlive to set
+	 */
+	public void setAlive(boolean isAlive) {
+		this.isAlive = isAlive;
+	}
+
+	/**
+	 * @param isExploding the isExploding to set
+	 */
+	public void setExploding(boolean isExploding) {
+		this.isExploding = isExploding;
+	}
+
+	/**
+	 * @return the primaryWeaponShots
+	 */
+	public ArrayList<PrimaryWeapon> getPrimaryWeaponShots() {
 		return primaryWeaponShots;
 	}
 
@@ -155,6 +168,46 @@ public abstract class Actor extends GameObject {
 	 */
 	public ArrayList<SecondaryWeapon> getSecondaryWeaponShots() {
 		return secondaryWeaponShots;
+	}
+
+	/**
+	 * @param rectangleWings the rectangleWings to set
+	 */
+	public void setRectangleWings(int x, int y, int width, int height) {
+		this.rectangleWings.setRect(x, y, width, height);
+		this.rectangleWings.setBounds(rectangleWings);
+	}
+
+	/**
+	 * @param rectangleBodyTop the rectangleBodyTop to set
+	 */
+	public void setRectangleBodyTop(int x, int y, int width, int height) {
+		this.rectangleBodyTop.setRect(x, y, width, height);
+		this.rectangleBodyTop.setBounds(rectangleBodyTop);
+	}
+
+	/**
+	 * @param rectangleBodyBottom the rectangleBodyBottom to set
+	 */
+	public void setRectangleBodyBottom(int x, int y, int width, int height) {
+		this.rectangleBodyBottom.setRect(x, y, width, height);
+		this.rectangleBodyBottom.setBounds(rectangleBodyBottom);
+	}
+
+	public Rectangle[] getAllRectangles() {
+		Rectangle[] allRectangles = new Rectangle[3];
+
+		allRectangles[0] = rectangleWings;
+		allRectangles[1] = rectangleBodyTop;
+		allRectangles[2] = rectangleBodyBottom;
+
+		return allRectangles;
+	}
+
+	public void drawCollisionRect(Graphics graphics, ImageObserver observer) {
+		graphics.drawRect(rectangleWings.x, rectangleWings.y, rectangleWings.width, rectangleWings.height);
+		graphics.drawRect(rectangleBodyTop.x, rectangleBodyTop.y, rectangleBodyTop.width, rectangleBodyTop.height);
+		graphics.drawRect(rectangleBodyBottom.x, rectangleBodyBottom.y, rectangleBodyBottom.width, rectangleBodyBottom.height);
 	}
 
 	public void stop() {
@@ -188,9 +241,5 @@ public abstract class Actor extends GameObject {
 
 	public abstract boolean isVisible();
 
-	public void drawCollisionRect(Graphics graphics, ImageObserver observer) {
-		graphics.drawRect(rectangleWings.x, rectangleWings.y, rectangleWings.width, rectangleWings.height);
-		graphics.drawRect(rectangleBodyTop.x, rectangleBodyTop.y, rectangleBodyTop.width, rectangleBodyTop.height);
-		graphics.drawRect(rectangleBodyBottom.x, rectangleBodyBottom.y, rectangleBodyBottom.width, rectangleBodyBottom.height);
-	}
+	public abstract boolean isColliding(Actor actor);
 }

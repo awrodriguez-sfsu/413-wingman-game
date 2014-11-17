@@ -1,9 +1,15 @@
+/**
+ * 
+ */
 package actors;
 
-import java.awt.Image;
-import java.awt.image.ImageObserver;
+import java.awt.Rectangle;
 
 import projectiles.PrimaryWeapon;
+import projectiles.SecondaryWeapon;
+import wingman.GameBase;
+import enums.AnimationType;
+import enums.GameObjectType;
 
 /**
  * @author Anthony Rodriguez
@@ -11,28 +17,29 @@ import projectiles.PrimaryWeapon;
  */
 public class MainActor extends Actor {
 
-	private ImageObserver observer;
+	private AnimationType primaryWeapon;
+	private AnimationType secondaryWeapon;
 
 	private final float MOVEMENT_SPEED = 3.5f;
 
 	/**
-	 * @param imageArray
+	 * @param image
+	 * @param type
 	 * @param x_pos
 	 * @param y_pos
 	 */
-	public MainActor(Image[] imageArray, Image primaryWeapon, int x_pos, int y_pos, ImageObserver observer) {
-		super(imageArray, x_pos, y_pos, observer);
-		this.observer = observer;
+	public MainActor(AnimationType image, AnimationType primaryWeapon, AnimationType secondaryWeapon, int x_pos, int y_pos) {
+		super(image, GameObjectType.MAIN_CHARACTER, x_pos, y_pos);
 		this.primaryWeapon = primaryWeapon;
+		this.secondaryWeapon = secondaryWeapon;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see actors.Actor#update(int, int)
+	 */
 	@Override
 	public void update(int width, int height) {
-		currentImage++;
-		if (currentImage > 2) {
-			currentImage = 0;
-		}
-
 		if (isMovingLeft() || isMovingRight()) {
 			x_pos += x_speed;
 		}
@@ -41,29 +48,25 @@ public class MainActor extends Actor {
 			y_pos += y_speed;
 		}
 
-		if (x_pos <= leftEdge + 5) {
-			x_pos = leftEdge + 5;
+		if (x_pos <= 5) {
+			x_pos = 5;
 		}
 
-		if (x_pos >= width - rightEdge + 5) {
-			x_pos = width - rightEdge + 5;
+		if (x_pos >= width - 50) {
+			x_pos = width - 50;
 		}
 
-		if (y_pos <= topEdge + 5) {
-			y_pos = topEdge + 5;
+		if (y_pos <= 50) {
+			y_pos = 50;
 		}
 
-		if (y_pos >= height - bottomEdge + 5) {
-			y_pos = height - bottomEdge + 5;
+		if (y_pos >= height - 50) {
+			y_pos = height - 50;
 		}
 
-		rectangleWings.setRect(x_pos + 2, y_pos + 21, 59, 13);
-		rectangleBodyTop.setRect(x_pos + 17, y_pos + 12, 31, 7);
-		rectangleBodyBottom.setRect(x_pos + 13, y_pos + 34, 37, 22);
-
-		rectangleWings.setBounds(rectangleWings);
-		rectangleBodyTop.setBounds(rectangleBodyTop);
-		rectangleBodyBottom.setBounds(rectangleBodyBottom);
+		setRectangleWings(x_pos + 3, y_pos + 21, 59, 13);
+		setRectangleBodyTop(x_pos + 17, y_pos + 13, 31, 8);
+		setRectangleBodyBottom(x_pos + 14, y_pos + 34, 37, 22);
 	}
 
 	@Override
@@ -152,25 +155,46 @@ public class MainActor extends Actor {
 
 	@Override
 	public void firePrimary() {
-		if (canFire()) {
-			PrimaryWeapon pShot = new PrimaryWeapon(primaryWeapon, x_pos, y_pos, observer);
+		if (canFirePrimary()) {
+			PrimaryWeapon pShot = new PrimaryWeapon(primaryWeapon, x_pos, y_pos);
 			primaryWeaponShots.add(pShot);
-			setCanFire(false);
+			setCanFirePrimary(false);
 		}
 	}
 
 	@Override
 	public void fireSecondary() {
-		System.out.println("Fire Secondary Weapon");
+		if (canFireSecondary()) {
+			SecondaryWeapon sShot = new SecondaryWeapon(secondaryWeapon, x_pos, y_pos);
+			secondaryWeaponShots.add(sShot);
+			setCanFireSecondary(false);
+		}
 	}
 
 	@Override
 	public void explode() {
-		System.out.println("Player.explode()");
+		setAnimation(GameBase.animations.get(AnimationType.LARGE_EXPLOSION));
 	}
 
 	@Override
 	public boolean isVisible() {
 		return true;
 	}
+
+	@Override
+	public boolean isColliding(Actor actor) {
+		Rectangle[] wingman = getAllRectangles();
+		Rectangle[] enemy = actor.getAllRectangles();
+
+		for (int i = 0; i < wingman.length; i++) {
+			for (int j = 0; j < enemy.length; j++) {
+				if (!actor.isExploding() && wingman[i].intersects(enemy[j])) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 }

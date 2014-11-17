@@ -1,7 +1,10 @@
 package enums;
 
 public enum EnemyType {
-	ENEMY1(1), ENEMY2(2), ENEMY3(3), ENEMY4(4);
+	ENEMY1(1),
+	ENEMY2(2),
+	ENEMY3(3),
+	ENEMY4(4);
 
 	private final int enemyType;
 

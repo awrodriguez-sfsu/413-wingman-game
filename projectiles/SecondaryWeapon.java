@@ -1,9 +1,8 @@
 package projectiles;
 
-import java.awt.Image;
-import java.awt.image.ImageObserver;
-
 import wingman.GameObject;
+import enums.AnimationType;
+import enums.GameObjectType;
 
 /**
  * @author Anthony Rodriguez
@@ -14,8 +13,8 @@ public class SecondaryWeapon extends GameObject {
 	private final int MOVEMENT_SPEED = 5;
 	private int y_speed = 0;
 
-	public SecondaryWeapon(Image image, int x_pos, int y_pos, ImageObserver observer) {
-		super(image, x_pos + 16, y_pos - 10, observer);
+	public SecondaryWeapon(AnimationType image, int x_pos, int y_pos) {
+		super(image, GameObjectType.PROJECTILE, x_pos + 16, y_pos - 10);
 	}
 
 	@Override

@@ -1,12 +1,14 @@
+/**
+ * 
+ */
 package background;
 
 import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.image.ImageObserver;
 import java.util.Random;
 
+import enums.AnimationType;
+import enums.GameObjectType;
 import wingman.GameObject;
-import enums.IslandType;
 
 /**
  * @author Anthony Rodriguez
@@ -14,24 +16,19 @@ import enums.IslandType;
  */
 public class Island extends GameObject {
 
-	private float y_speed = 1f;
+	private final float MOVEMENT_SPEED = 1f;
 
 	private Dimension dimension;
 
 	/**
 	 * @param image
+	 * @param type
 	 * @param x_pos
 	 * @param y_pos
 	 */
-	public Island(Image image, IslandType islandType, Random generator, Dimension dimension, ImageObserver observer) {
-		super(image, ( Math.abs(generator.nextInt() % dimension.width) ), -( Math.abs(generator.nextInt(( 1000 - 10 ) + 1) + 10) ), observer);
-
+	public Island(AnimationType image, Random generator, Dimension dimension) {
+		super(image, GameObjectType.BACKGROUND, ( Math.abs(generator.nextInt() % dimension.width) ), -( Math.abs(generator.nextInt(( 1000 - 10 ) + 1) + 10) ));
 		this.dimension = dimension;
-	}
-
-	@Override
-	public boolean isVisible() {
-		return !( x_pos > dimension.width - 32 || x_pos < 0 || y_pos > dimension.height );
 	}
 
 	/*
@@ -40,6 +37,16 @@ public class Island extends GameObject {
 	 */
 	@Override
 	public void update(int width, int height) {
-		y_pos += y_speed;
+		y_pos += MOVEMENT_SPEED;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see wingman.GameObject#isVisible()
+	 */
+	@Override
+	public boolean isVisible() {
+		return !( x_pos > dimension.width - 32 || x_pos < 0 || y_pos > dimension.height );
+	}
+
 }

@@ -1,7 +1,9 @@
 package enums;
 
 public enum IslandType {
-	ISLAND1(1), ISLAND2(2), ISLAND3(3);
+	ISLAND1(1),
+	ISLAND2(2),
+	ISLAND3(3);
 
 	private final int islandType;
 
