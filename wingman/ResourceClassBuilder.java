@@ -11,26 +11,61 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ResourceClassBuilder {
 
 	private static String newline = "\n";
 	private static String tab = "\t";
 
-	public static ArrayList<String> a = new ArrayList<>();
+	public static ArrayList<String> images = new ArrayList<>();
 
 	public static void main(String[] args) {
 		String resoucePath = "/home/arod/Desktop/Resources";
 		File folder = new File(resoucePath);
 		File[] listOfFiles = folder.listFiles();
+
+		Arrays.sort(listOfFiles);
+
 		for (int i = 0; i < listOfFiles.length; i++) {
 			if (listOfFiles[i].isFile()) {
 				if (listOfFiles[i].getName().endsWith("png"))
-					a.add(listOfFiles[i].getName());
+					images.add(listOfFiles[i].getName());
 			} else if (listOfFiles[i].isDirectory()) {
-				// Multiple levels if directories
+				// Multiple levels of directories
 			}
+		}
+
+		File directory = new File("resources");
+
+		if (directory.exists()) {
+			Path target = Paths.get(directory.getAbsolutePath());
+			for (int i = 0; i < listOfFiles.length; i++) {
+				Path source = Paths.get(listOfFiles[i].getAbsolutePath());
+				try {
+					Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
+				} catch (IOException ioException) {
+					ioException.printStackTrace();
+				}
+			}
+		} else if (directory.mkdir()) {
+			Path target = Paths.get(directory.getAbsolutePath());
+			for (int i = 0; i < listOfFiles.length; i++) {
+				Path source = Paths.get(listOfFiles[i].getAbsolutePath());
+				try {
+					Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
+				} catch (IOException ioException) {
+					ioException.printStackTrace();
+				}
+			}
+		} else {
+			System.out.println("There was a fatal error creating resources file");
+			System.exit(1);
 		}
 
 		Writer writer = null;
@@ -50,8 +85,8 @@ public class ResourceClassBuilder {
 			writer.write(tab + "public Image ");
 
 			String preFixed = "";
-			for (int i = 0; i < a.size(); i++) {
-				String prefix = a.get(i);
+			for (int i = 0; i < images.size(); i++) {
+				String prefix = images.get(i);
 				prefix = prefix.substring(0, prefix.length() - 4);
 				preFixed += prefix + ",";
 
@@ -66,10 +101,10 @@ public class ResourceClassBuilder {
 			writer.write(tab + "private Resources() {" + newline);
 			writer.write(tab + tab + "try {" + newline);
 
-			for (int i = 0; i < a.size(); i++) {
-				String prefix = a.get(i);
+			for (int i = 0; i < images.size(); i++) {
+				String prefix = images.get(i);
 				prefix = prefix.substring(0, prefix.length() - 4);
-				writer.write(tab + tab + tab + prefix + " = ImageIO.read(new File(\"../Resources/" + a.get(i) + "\"));" + newline);
+				writer.write(tab + tab + tab + prefix + " = ImageIO.read(new File(\"../resources/" + images.get(i) + "\"));" + newline);
 			}
 
 			writer.write(newline);
