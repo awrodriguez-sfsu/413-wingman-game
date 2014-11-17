@@ -8,27 +8,8 @@ import java.io.IOException;
 public class Resources {
 
 	private static Resources instance;
-	public Image sovereign_128_3,youWin,explosion2_3,galaxy_128_3,island1,powerup,
-				defiant_64_4,defiant_128,sovereign_64,enemy2_3,defiant_32_5,
-				bulletLeft_up,enemy3_2,sovereign_128,enemy1_1,enemy1_2,
-				explosion2_4,defiant_64_2,myplane_3,galaxy_64_5,defiant_32,
-				explosion2_6,defiant_128_4,island3,enemy1_3,island2,
-				explosion2_2,defiant_32_1,defiant_128_3,galaxy_128_5,defiant_64_1,
-				enemy4_3,health1,galaxy_64,galaxy_64_3,bulletRight,
-				explosion2_7,boss,enemy4_1,enemy4_2,defiant_32_3,
-				defiant_32_2,enemybullet1,explosion1_strip6,sovereign_128_5,explosion2_1,
-				sovereign_128_2,galaxy_64_4,myplane_strip3,enemy3_1,galaxy_64_1,
-				gameOver,health3,enemy2_strip3,explosion1_3,bottom,
-				explosion1_6,defiant_64_5,bullet,enemy1_strip3,explosion1_2,
-				explosion1_1,bigBullet,sovereign_64_3,galaxy_128,sovereign_128_1,
-				explosion2_strip7,galaxy_128_1,myplane_2,defiant_128_1,water,
-				enemy4_strip3,enemy3_3,sovereign_64_5,life,defiant_128_5,
-				explosion2_5,bulletRight_up,galaxy_128_4,defiant_128_2,enemybullet2,
-				sovereign_128_4,galaxy_128_2,sovereign_64_2,sovereign_64_4,sovereign_64_1,
-				bullet_up,enemy3_strip3,health2,explosion1_4,youLose,
-				defiant_64,myplane_1,bulletLeft,score,explosion1_5,
-				enemy2_2,health,galaxy_64_2,defiant_64_3,defiant_32_4,
-				enemy2_1;
+	public Image sovereign_128_3, youWin, explosion2_3, galaxy_128_3, island1, powerup, defiant_64_4, defiant_128, sovereign_64, enemy2_3, defiant_32_5, bulletLeft_up, enemy3_2, sovereign_128, enemy1_1, enemy1_2, explosion2_4, defiant_64_2, myplane_3, galaxy_64_5, defiant_32, explosion2_6, defiant_128_4, island3, enemy1_3, island2, explosion2_2, defiant_32_1, defiant_128_3, galaxy_128_5, defiant_64_1, enemy4_3, health1, galaxy_64, galaxy_64_3, bulletRight, explosion2_7, boss, enemy4_1, enemy4_2, defiant_32_3, defiant_32_2, enemybullet1, explosion1_strip6, sovereign_128_5, explosion2_1, sovereign_128_2, galaxy_64_4, myplane_strip3, enemy3_1, galaxy_64_1, gameOver, health3, enemy2_strip3, explosion1_3, bottom, explosion1_6, defiant_64_5, bullet, enemy1_strip3, explosion1_2, explosion1_1,
+			bigBullet, sovereign_64_3, galaxy_128, sovereign_128_1, explosion2_strip7, galaxy_128_1, myplane_2, defiant_128_1, water, enemy4_strip3, enemy3_3, sovereign_64_5, life, defiant_128_5, explosion2_5, bulletRight_up, galaxy_128_4, defiant_128_2, enemybullet2, sovereign_128_4, galaxy_128_2, sovereign_64_2, sovereign_64_4, sovereign_64_1, bullet_up, enemy3_strip3, health2, explosion1_4, youLose, defiant_64, myplane_1, bulletLeft, score, explosion1_5, enemy2_2, health, galaxy_64_2, defiant_64_3, defiant_32_4, enemy2_1;
 
 	private Resources() {
 		try {
