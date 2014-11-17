@@ -119,12 +119,12 @@ public class Enemy extends Actor {
 
 	@Override
 	public boolean isMovingUp() {
-		return ( enemyType == EnemyType.ENEMY4 ) && isAlive();
+		return ( enemyType == EnemyType.ENEMY4 ) && !isExploding();
 	}
 
 	@Override
 	public boolean isMovingDown() {
-		return !( enemyType == EnemyType.ENEMY4 ) && isAlive();
+		return !( enemyType == EnemyType.ENEMY4 ) && !isExploding();
 	}
 
 	/*

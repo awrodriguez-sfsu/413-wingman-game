@@ -7,7 +7,6 @@ import java.awt.Rectangle;
 
 import projectiles.PrimaryWeapon;
 import projectiles.SecondaryWeapon;
-import wingman.GameBase;
 import enums.AnimationType;
 import enums.GameObjectType;
 
@@ -173,7 +172,7 @@ public class MainActor extends Actor {
 
 	@Override
 	public void explode() {
-		setAnimation(GameBase.animations.get(AnimationType.LARGE_EXPLOSION));
+		// setAnimation();
 	}
 
 	@Override

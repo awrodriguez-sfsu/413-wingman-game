@@ -4,13 +4,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.MediaTracker;
 import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,8 +46,6 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 
 	private Animation mainCharacter, enemy1, enemy2, enemy3, enemy4;
 
-	private Animation smallExplosion, largeExplosion;
-
 	private Animation background, island1, island2, island3;
 
 	private Animation mainCharacterPrimaryWeapon, mainCharacterSecondaryWeapon, enemyWeapon1, enemyWeapon2;
@@ -76,79 +71,60 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 
 	private void setupImages() {
 		mainCharacter = new Animation();
-		mainCharacter.addFrame(getSprite("myplane_1.png"), 100);
-		mainCharacter.addFrame(getSprite("myplane_2.png"), 100);
-		mainCharacter.addFrame(getSprite("myplane_3.png"), 100);
+		mainCharacter.addFrame(Resources.getInstance().myplane_1, 100);
+		mainCharacter.addFrame(Resources.getInstance().myplane_2, 100);
+		mainCharacter.addFrame(Resources.getInstance().myplane_3, 100);
 
 		enemy1 = new Animation();
-		enemy1.addFrame(getSprite("enemy1_1.png"), 100);
-		enemy1.addFrame(getSprite("enemy1_2.png"), 100);
-		enemy1.addFrame(getSprite("enemy1_3.png"), 100);
+		enemy1.addFrame(Resources.getInstance().enemy1_1, 100);
+		enemy1.addFrame(Resources.getInstance().enemy1_2, 100);
+		enemy1.addFrame(Resources.getInstance().enemy1_3, 100);
 
 		enemy2 = new Animation();
-		enemy2.addFrame(getSprite("enemy2_1.png"), 100);
-		enemy2.addFrame(getSprite("enemy2_2.png"), 100);
-		enemy2.addFrame(getSprite("enemy2_3.png"), 100);
+		enemy2.addFrame(Resources.getInstance().enemy2_1, 100);
+		enemy2.addFrame(Resources.getInstance().enemy2_2, 100);
+		enemy2.addFrame(Resources.getInstance().enemy2_3, 100);
 
 		enemy3 = new Animation();
-		enemy3.addFrame(getSprite("enemy3_1.png"), 100);
-		enemy3.addFrame(getSprite("enemy3_2.png"), 100);
-		enemy3.addFrame(getSprite("enemy3_3.png"), 100);
+		enemy3.addFrame(Resources.getInstance().enemy3_1, 100);
+		enemy3.addFrame(Resources.getInstance().enemy3_2, 100);
+		enemy3.addFrame(Resources.getInstance().enemy3_3, 100);
 
 		enemy4 = new Animation();
-		enemy4.addFrame(getSprite("enemy4_1.png"), 100);
-		enemy4.addFrame(getSprite("enemy4_2.png"), 100);
-		enemy4.addFrame(getSprite("enemy4_3.png"), 100);
-
-		smallExplosion = new Animation(true);
-		smallExplosion.addFrame(Resources.getInstance().explosion1_1, 250);
-		smallExplosion.addFrame(Resources.getInstance().explosion1_2, 250);
-		smallExplosion.addFrame(Resources.getInstance().explosion1_3, 250);
-		smallExplosion.addFrame(Resources.getInstance().explosion1_4, 250);
-		smallExplosion.addFrame(Resources.getInstance().explosion1_5, 250);
-		smallExplosion.addFrame(Resources.getInstance().explosion1_6, 250);
-
-		largeExplosion = new Animation(true);
-		largeExplosion.addFrame(getSprite("explosion2_1.png"), 250);
-		largeExplosion.addFrame(getSprite("explosion2_2.png"), 250);
-		largeExplosion.addFrame(getSprite("explosion2_3.png"), 250);
-		largeExplosion.addFrame(getSprite("explosion2_4.png"), 250);
-		largeExplosion.addFrame(getSprite("explosion2_5.png"), 250);
-		largeExplosion.addFrame(getSprite("explosion2_6.png"), 250);
-		largeExplosion.addFrame(getSprite("explosion2_7.png"), 250);
+		enemy4.addFrame(Resources.getInstance().enemy4_1, 100);
+		enemy4.addFrame(Resources.getInstance().enemy4_2, 100);
+		enemy4.addFrame(Resources.getInstance().enemy4_3, 100);
 
 		background = new Animation();
-		background.addFrame(getSprite("water.png"), 1);
+		background.addFrame(Resources.getInstance().water, 1);
 
 		island1 = new Animation();
-		island1.addFrame(getSprite("island1.png"), 1);
+		island1.addFrame(Resources.getInstance().island1, 1);
 
 		island2 = new Animation();
-		island2.addFrame(getSprite("island2.png"), 1);
+		island2.addFrame(Resources.getInstance().island2, 1);
 
 		island3 = new Animation();
-		island3.addFrame(getSprite("island3.png"), 1);
+		island3.addFrame(Resources.getInstance().island3, 1);
 
 		mainCharacterPrimaryWeapon = new Animation();
-		mainCharacterPrimaryWeapon.addFrame(getSprite("bullet_up.png"), 1);
+		mainCharacterPrimaryWeapon.addFrame(Resources.getInstance().bullet_up, 1);
 
 		mainCharacterSecondaryWeapon = new Animation();
-		mainCharacterSecondaryWeapon.addFrame(getSprite("bigBullet.png"), 1);
+		mainCharacterSecondaryWeapon.addFrame(Resources.getInstance().bigBullet, 1);
 
 		enemyWeapon1 = new Animation();
-		enemyWeapon1.addFrame(getSprite("enemybullet1.png"), 200);
-		enemyWeapon1.addFrame(getSprite("enemybullet2.png"), 500);
+		enemyWeapon1.addFrame(Resources.getInstance().enemybullet1, 200);
+		enemyWeapon1.addFrame(Resources.getInstance().enemybullet2, 800);
 
 		enemyWeapon2 = new Animation();
-		enemyWeapon2.addFrame(getSprite("bigBullet.png"), 1);
+		enemyWeapon2.addFrame(Resources.getInstance().bigBullet, 1);
 
 		animations.put(AnimationType.MAIN_CHARACTER, mainCharacter);
 		animations.put(AnimationType.ENEMY1, enemy1);
 		animations.put(AnimationType.ENEMY2, enemy2);
 		animations.put(AnimationType.ENEMY3, enemy3);
 		animations.put(AnimationType.ENEMY4, enemy4);
-		animations.put(AnimationType.SMALL_EXPLOSION, smallExplosion);
-		animations.put(AnimationType.LARGE_EXPLOSION, largeExplosion);
 		animations.put(AnimationType.BACKGROUND, background);
 		animations.put(AnimationType.ISLAND1, island1);
 		animations.put(AnimationType.ISLAND2, island2);
@@ -157,21 +133,6 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 		animations.put(AnimationType.MAIN_CHARACTER_SECONDARY_WEAPON, mainCharacterSecondaryWeapon);
 		animations.put(AnimationType.ENEMY_WEAPON1, enemyWeapon1);
 		animations.put(AnimationType.ENEMY_WEAPON2, enemyWeapon2);
-	}
-
-	private Image getSprite(String name) {
-		URL url = GameBase.class.getResource("Resources/" + name);
-		Image image = getToolkit().getImage(url);
-
-		try {
-			MediaTracker tracker = new MediaTracker(this);
-			tracker.addImage(image, 0);
-			tracker.waitForID(0);
-		} catch (Exception exception) {
-			exception.printStackTrace();
-		}
-
-		return image;
 	}
 
 	@Override
