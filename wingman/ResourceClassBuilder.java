@@ -26,7 +26,7 @@ public class ResourceClassBuilder {
 		String resourcePath = "C:\\Users\\arodr101\\Desktop\\Resources";
 		// String resourcePath = "Resources";
 		File folder = new File(resourcePath);
-		System.out.println("Folder Exists" + folder.exists());
+		System.out.println("Folder Exists: " + folder.exists());
 		File[] listOfFiles = folder.listFiles();
 
 		Arrays.sort(listOfFiles);
