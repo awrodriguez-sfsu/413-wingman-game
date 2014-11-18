@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.Random;
 import java.util.Set;
 
 import javax.swing.JApplet;
+import javax.swing.JFrame;
 
 import projectiles.PrimaryWeapon;
 import projectiles.SecondaryWeapon;
@@ -487,5 +489,20 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 	public void keyTyped(KeyEvent event) {
 
 		// TODO Auto-generated method stub
+	}
+
+	public static void main(String[] args) {
+		// ResourceClassBuilder.main(args);
+
+		final GameBase game = new GameBase();
+		game.init();
+
+		JFrame jFrame = new JFrame("Wingman");
+		jFrame.addWindowListener(new WindowAdapter() {});
+		jFrame.getContentPane().add("Center", game);
+		jFrame.pack();
+		jFrame.setSize(new Dimension(800, 800));
+		jFrame.setVisible(true);
+		game.start();
 	}
 }

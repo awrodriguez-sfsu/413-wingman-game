@@ -11,10 +11,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -26,8 +22,11 @@ public class ResourceClassBuilder {
 	public static ArrayList<String> images = new ArrayList<>();
 
 	public static void main(String[] args) {
-		String resoucePath = "/home/arod/Desktop/Resources";
-		File folder = new File(resoucePath);
+		// String resourcePath = "/home/arod/Desktop/Resources";
+		String resourcePath = "C:\\Users\\arodr101\\Desktop\\Resources";
+		// String resourcePath = "Resources";
+		File folder = new File(resourcePath);
+		System.out.println("Folder Exists" + folder.exists());
 		File[] listOfFiles = folder.listFiles();
 
 		Arrays.sort(listOfFiles);
@@ -43,30 +42,7 @@ public class ResourceClassBuilder {
 
 		File directory = new File("resources");
 
-		if (directory.exists()) {
-			Path target = Paths.get(directory.getAbsolutePath());
-			for (int i = 0; i < listOfFiles.length; i++) {
-				Path source = Paths.get(listOfFiles[i].getAbsolutePath());
-				try {
-					Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
-				} catch (IOException ioException) {
-					ioException.printStackTrace();
-				}
-			}
-		} else if (directory.mkdir()) {
-			Path target = Paths.get(directory.getAbsolutePath());
-			for (int i = 0; i < listOfFiles.length; i++) {
-				Path source = Paths.get(listOfFiles[i].getAbsolutePath());
-				try {
-					Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
-				} catch (IOException ioException) {
-					ioException.printStackTrace();
-				}
-			}
-		} else {
-			System.out.println("There was a fatal error creating resources file");
-			System.exit(1);
-		}
+		FileUtilities.copyDirectory(resourcePath, directory.getAbsolutePath());
 
 		Writer writer = null;
 
