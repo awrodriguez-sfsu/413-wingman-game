@@ -3,10 +3,13 @@
  */
 package actors;
 
+import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.image.ImageObserver;
 
 import projectiles.PrimaryWeapon;
 import projectiles.SecondaryWeapon;
+import shapes.Circle;
 import enums.AnimationType;
 import enums.GameObjectType;
 
@@ -21,6 +24,8 @@ public class MainActor extends Actor {
 
 	private final float MOVEMENT_SPEED = 3.5f;
 
+	public Circle circle;
+
 	/**
 	 * @param image
 	 * @param type
@@ -31,6 +36,7 @@ public class MainActor extends Actor {
 		super(image, GameObjectType.MAIN_CHARACTER, x_pos, y_pos);
 		this.primaryWeapon = primaryWeapon;
 		this.secondaryWeapon = secondaryWeapon;
+		circle = new Circle(x_pos, y_pos, 64);
 	}
 
 	/*
@@ -66,6 +72,11 @@ public class MainActor extends Actor {
 		setRectangleWings(x_pos + 3, y_pos + 21, 59, 13);
 		setRectangleBodyTop(x_pos + 17, y_pos + 13, 31, 8);
 		setRectangleBodyBottom(x_pos + 14, y_pos + 34, 37, 22);
+		circle.update(x_pos, y_pos);
+	}
+
+	public void drawCircle(Graphics graphics, ImageObserver observer) {
+		graphics.drawOval((int) circle.getX(), (int) circle.getY(), (int) circle.getWidth(), (int) circle.getWidth());
 	}
 
 	@Override

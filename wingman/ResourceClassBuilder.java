@@ -22,8 +22,8 @@ public class ResourceClassBuilder {
 	public static ArrayList<String> images = new ArrayList<>();
 
 	public static void main(String[] args) {
-		// String resourcePath = "/home/arod/Desktop/Resources";
-		String resourcePath = "C:\\Users\\arodr101\\Desktop\\Resources";
+		String resourcePath = "/home/arod/Desktop/Resources";
+		// String resourcePath = "C:\\Users\\arodr101\\Desktop\\Resources";
 		// String resourcePath = "Resources";
 		File folder = new File(resourcePath);
 		System.out.println("Folder Exists: " + folder.exists());

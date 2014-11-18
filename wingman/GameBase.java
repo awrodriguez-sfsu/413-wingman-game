@@ -220,7 +220,8 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 
 			wingman.update(width, height);
 			wingman.draw(graphics2d, this);
-			wingman.drawCollisionRect(graphics2d, this);
+			// wingman.drawCollisionRect(graphics2d, this);
+			wingman.drawCircle(graphics2d, this);
 
 			if (enemies.size() < 3) {
 				generateEnemies(generator.nextInt(( maxEnemies - minEnemies ) + 1) + minEnemies);

@@ -1,5 +1,8 @@
 package projectiles;
 
+import java.awt.geom.Ellipse2D;
+
+import shapes.Circle;
 import enums.AnimationType;
 
 /**
@@ -13,6 +16,7 @@ public class PrimaryWeapon extends Projectile {
 
 	public PrimaryWeapon(AnimationType image, int x_pos, int y_pos) {
 		super(image, x_pos + 16, y_pos - 10);
+		
 	}
 
 	@Override

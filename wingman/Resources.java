@@ -8,7 +8,7 @@ import java.io.IOException;
 public class Resources {
 
 	private static Resources instance;
-	public Image bigBullet, boss, bottom, bullet, bullet_up, bulletLeft, bulletLeft_up, bulletRight, bulletRight_up, defiant_128, defiant_128_1, defiant_128_2, defiant_128_3, defiant_128_4, defiant_128_5, defiant_32, defiant_32_1, defiant_32_2, defiant_32_3, defiant_32_4, defiant_32_5, defiant_64, defiant_64_1, defiant_64_2, defiant_64_3, defiant_64_4, defiant_64_5, enemy1_1, enemy1_2, enemy1_3, enemy1_strip3, enemy2_1, enemy2_2, enemy2_3, enemy2_strip3, enemy3_1, enemy3_2, enemy3_3, enemy3_strip3, enemy4_1, enemy4_2, enemy4_3, enemy4_strip3, enemybullet1, enemybullet2, explosion1_1, explosion1_2, explosion1_3, explosion1_4, explosion1_5, explosion1_6, explosion1_strip6, explosion2_1, explosion2_2, explosion2_3, explosion2_4, explosion2_5, explosion2_6, explosion2_7, explosion2_strip7,
+	public Image bigBullet, boss, bottom, bullet, bulletLeft, bulletLeft_up, bulletRight, bulletRight_up, bullet_up, defiant_128, defiant_128_1, defiant_128_2, defiant_128_3, defiant_128_4, defiant_128_5, defiant_32, defiant_32_1, defiant_32_2, defiant_32_3, defiant_32_4, defiant_32_5, defiant_64, defiant_64_1, defiant_64_2, defiant_64_3, defiant_64_4, defiant_64_5, enemy1_1, enemy1_2, enemy1_3, enemy1_strip3, enemy2_1, enemy2_2, enemy2_3, enemy2_strip3, enemy3_1, enemy3_2, enemy3_3, enemy3_strip3, enemy4_1, enemy4_2, enemy4_3, enemy4_strip3, enemybullet1, enemybullet2, explosion1_1, explosion1_2, explosion1_3, explosion1_4, explosion1_5, explosion1_6, explosion1_strip6, explosion2_1, explosion2_2, explosion2_3, explosion2_4, explosion2_5, explosion2_6, explosion2_7, explosion2_strip7,
 			galaxy_128, galaxy_128_1, galaxy_128_2, galaxy_128_3, galaxy_128_4, galaxy_128_5, galaxy_64, galaxy_64_1, galaxy_64_2, galaxy_64_3, galaxy_64_4, galaxy_64_5, gameOver, health, health1, health2, health3, island1, island2, island3, life, myplane_1, myplane_2, myplane_3, myplane_strip3, powerup, score, sovereign_128, sovereign_128_1, sovereign_128_2, sovereign_128_3, sovereign_128_4, sovereign_128_5, sovereign_64, sovereign_64_1, sovereign_64_2, sovereign_64_3, sovereign_64_4, sovereign_64_5, water, youLose, youWin;
 
 	private Resources() {
@@ -17,11 +17,11 @@ public class Resources {
 			boss = ImageIO.read(new File("../resources/boss.png"));
 			bottom = ImageIO.read(new File("../resources/bottom.png"));
 			bullet = ImageIO.read(new File("../resources/bullet.png"));
-			bullet_up = ImageIO.read(new File("../resources/bullet_up.png"));
 			bulletLeft = ImageIO.read(new File("../resources/bulletLeft.png"));
 			bulletLeft_up = ImageIO.read(new File("../resources/bulletLeft_up.png"));
 			bulletRight = ImageIO.read(new File("../resources/bulletRight.png"));
 			bulletRight_up = ImageIO.read(new File("../resources/bulletRight_up.png"));
+			bullet_up = ImageIO.read(new File("../resources/bullet_up.png"));
 			defiant_128 = ImageIO.read(new File("../resources/defiant_128.png"));
 			defiant_128_1 = ImageIO.read(new File("../resources/defiant_128_1.png"));
 			defiant_128_2 = ImageIO.read(new File("../resources/defiant_128_2.png"));
