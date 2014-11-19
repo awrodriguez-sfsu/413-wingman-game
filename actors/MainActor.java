@@ -33,7 +33,7 @@ public class MainActor extends Actor {
 	 * @param y_pos
 	 */
 	public MainActor(AnimationType image, AnimationType primaryWeapon, AnimationType secondaryWeapon, int x_pos, int y_pos) {
-		super(image, GameObjectType.MAIN_CHARACTER, x_pos, y_pos);
+		super(image, GameObjectType.PLAYER1, x_pos, y_pos);
 		this.primaryWeapon = primaryWeapon;
 		this.secondaryWeapon = secondaryWeapon;
 		circle = new Circle(x_pos, y_pos, 64);
@@ -68,11 +68,6 @@ public class MainActor extends Actor {
 		if (y_pos >= height - 50) {
 			y_pos = height - 50;
 		}
-
-		setRectangleWings(x_pos + 3, y_pos + 21, 59, 13);
-		setRectangleBodyTop(x_pos + 17, y_pos + 13, 31, 8);
-		setRectangleBodyBottom(x_pos + 14, y_pos + 34, 37, 22);
-		circle.update(x_pos, y_pos);
 	}
 
 	public void drawCircle(Graphics graphics, ImageObserver observer) {

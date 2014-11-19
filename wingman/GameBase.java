@@ -50,7 +50,7 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 
 	private Animation background, island1, island2, island3;
 
-	private Animation mainCharacterPrimaryWeapon, mainCharacterSecondaryWeapon, enemyWeapon1, enemyWeapon2;
+	private Animation bullet, big_bullet, enemyWeapon1, enemyWeapon2;
 
 	private MainActor wingman;
 
@@ -68,7 +68,7 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 
 		setupImages();
 
-		wingman = new MainActor(AnimationType.MAIN_CHARACTER, AnimationType.MAIN_CHARACTER_PRIMARY_WEAPON, AnimationType.MAIN_CHARACTER_SECONDARY_WEAPON, WIDTH / 2, HEIGHT - 128);
+		wingman = new MainActor(AnimationType.PLAYER1, AnimationType.BULLET, AnimationType.BIG_BULLET, WIDTH / 2, HEIGHT - 128);
 	}
 
 	private void setupImages() {
@@ -109,11 +109,11 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 		island3 = new Animation();
 		island3.addFrame(Resources.getInstance().island3, 1);
 
-		mainCharacterPrimaryWeapon = new Animation();
-		mainCharacterPrimaryWeapon.addFrame(Resources.getInstance().bullet, 1);
+		bullet = new Animation();
+		bullet.addFrame(Resources.getInstance().bullet, 1);
 
-		mainCharacterSecondaryWeapon = new Animation();
-		mainCharacterSecondaryWeapon.addFrame(Resources.getInstance().big_bullet, 1);
+		big_bullet = new Animation();
+		big_bullet.addFrame(Resources.getInstance().big_bullet, 1);
 
 		enemyWeapon1 = new Animation();
 		enemyWeapon1.addFrame(Resources.getInstance().enemy_bullet1, 1);
@@ -121,7 +121,7 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 		enemyWeapon2 = new Animation();
 		enemyWeapon2.addFrame(Resources.getInstance().enemy_bullet2, 1);
 
-		animations.put(AnimationType.MAIN_CHARACTER, mainCharacter);
+		animations.put(AnimationType.PLAYER1, mainCharacter);
 		animations.put(AnimationType.ENEMY1, enemy1);
 		animations.put(AnimationType.ENEMY2, enemy2);
 		animations.put(AnimationType.ENEMY3, enemy3);
@@ -130,8 +130,8 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 		animations.put(AnimationType.ISLAND1, island1);
 		animations.put(AnimationType.ISLAND2, island2);
 		animations.put(AnimationType.ISLAND3, island3);
-		animations.put(AnimationType.MAIN_CHARACTER_PRIMARY_WEAPON, mainCharacterPrimaryWeapon);
-		animations.put(AnimationType.MAIN_CHARACTER_SECONDARY_WEAPON, mainCharacterSecondaryWeapon);
+		animations.put(AnimationType.BULLET, bullet);
+		animations.put(AnimationType.BIG_BULLET, big_bullet);
 		animations.put(AnimationType.ENEMY_WEAPON1, enemyWeapon1);
 		animations.put(AnimationType.ENEMY_WEAPON2, enemyWeapon2);
 	}

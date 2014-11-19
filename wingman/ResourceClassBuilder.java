@@ -30,6 +30,9 @@ public class ResourceClassBuilder {
 		String resourcePath = "C:\\Users\\arodr101\\Desktop\\Wingman\\Resources";
 		String resourcesText = "C:\\Users\\arodr101\\Desktop\\Wingman\\resources.txt";
 
+		// String jarRun = "../";
+		String jarRun = "";
+
 		System.out.println("Getting resources.txt");
 		try (BufferedReader br = new BufferedReader(new FileReader(resourcesText))) {
 			for (String line; ( line = br.readLine() ) != null;) {
@@ -124,7 +127,7 @@ public class ResourceClassBuilder {
 			for (int i = 0; i < images.size(); i++) {
 				String prefix = images.get(i);
 				prefix = prefix.substring(0, prefix.length() - 4);
-				writer.write(tab + tab + tab + prefix + " = ImageIO.read(new File(\"../resources/" + images.get(i) + "\"));" + newline);
+				writer.write(tab + tab + tab + prefix + " = ImageIO.read(new File(" + "\"" + jarRun + "resources/" + images.get(i) + "\"));" + newline);
 			}
 
 			writer.write(newline);
@@ -162,7 +165,7 @@ public class ResourceClassBuilder {
 			writer.write(tab + tab + "public ResourceSpec(String name) {" + newline);
 			writer.write(tab + tab + tab + "parser = new JSONParser();" + newline);
 			writer.write(tab + tab + tab + "try {" + newline);
-			writer.write(tab + tab + tab + tab + "JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(\"../resources.json\"));" + newline);
+			writer.write(tab + tab + tab + tab + "JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(\"" + jarRun + "resources.json\"));" + newline);
 			writer.write(tab + tab + tab + tab + "JSONObject objectSpecifications = (JSONObject) jsonObject.get(name);" + newline);
 			writer.write(tab + tab + tab + tab + "JSONObject bounds = (JSONObject) objectSpecifications.get(\"bounds\");" + newline);
 			writer.write(tab + tab + tab + tab + "JSONArray center = (JSONArray) bounds.get(\"center\");" + newline);
