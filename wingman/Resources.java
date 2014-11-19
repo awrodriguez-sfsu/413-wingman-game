@@ -117,7 +117,7 @@ public class Resources {
 
 		private JSONParser parser;
 
-				public ArrayList<Shape> shapes = new ArrayList<Shape>();
+		public ArrayList<Shape> shapes = new ArrayList<Shape>();
 
 		public ResourceSpec(String name) {
 			parser = new JSONParser();

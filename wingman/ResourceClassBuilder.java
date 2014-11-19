@@ -151,13 +151,13 @@ public class ResourceClassBuilder {
 
 			writer.write(tab + "public class ResourceSpec {" + newline);
 			writer.write(newline);
-			writer.write(tab + tab + "//Bounds" + newline);
+			writer.write(tab + tab + "// Bounds" + newline);
 			writer.write(tab + tab + "public double center_x, center_y, top, bottom , left, right;" + newline);
 			writer.write(tab + tab + "public int number_of_shapes;" + newline);
 			writer.write(newline);
 			writer.write(tab + tab + "private JSONParser parser;" + newline);
 			writer.write(newline);
-			writer.write(tab + tab + tab + tab + "public ArrayList<Shape> shapes = new ArrayList<Shape>();" + newline);
+			writer.write(tab + tab + "public ArrayList<Shape> shapes = new ArrayList<Shape>();" + newline);
 			writer.write(newline);
 			writer.write(tab + tab + "public ResourceSpec(String name) {" + newline);
 			writer.write(tab + tab + tab + "parser = new JSONParser();" + newline);
