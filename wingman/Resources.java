@@ -21,56 +21,56 @@ public class Resources {
 
 	private Resources() {
 		try {
-			big_bullet = ImageIO.read(new File("resources/big_bullet.png"));
-			boss = ImageIO.read(new File("resources/boss.png"));
-			bottom = ImageIO.read(new File("resources/bottom.png"));
-			bullet = ImageIO.read(new File("resources/bullet.png"));
-			bullet_left = ImageIO.read(new File("resources/bullet_left.png"));
-			bullet_right = ImageIO.read(new File("resources/bullet_right.png"));
-			enemy1_1 = ImageIO.read(new File("resources/enemy1_1.png"));
-			enemy1_2 = ImageIO.read(new File("resources/enemy1_2.png"));
-			enemy1_3 = ImageIO.read(new File("resources/enemy1_3.png"));
-			enemy2_1 = ImageIO.read(new File("resources/enemy2_1.png"));
-			enemy2_2 = ImageIO.read(new File("resources/enemy2_2.png"));
-			enemy2_3 = ImageIO.read(new File("resources/enemy2_3.png"));
-			enemy3_1 = ImageIO.read(new File("resources/enemy3_1.png"));
-			enemy3_2 = ImageIO.read(new File("resources/enemy3_2.png"));
-			enemy3_3 = ImageIO.read(new File("resources/enemy3_3.png"));
-			enemy4_1 = ImageIO.read(new File("resources/enemy4_1.png"));
-			enemy4_2 = ImageIO.read(new File("resources/enemy4_2.png"));
-			enemy4_3 = ImageIO.read(new File("resources/enemy4_3.png"));
-			enemy_bullet1 = ImageIO.read(new File("resources/enemy_bullet1.png"));
-			enemy_bullet2 = ImageIO.read(new File("resources/enemy_bullet2.png"));
-			explosion1_1 = ImageIO.read(new File("resources/explosion1_1.png"));
-			explosion1_2 = ImageIO.read(new File("resources/explosion1_2.png"));
-			explosion1_3 = ImageIO.read(new File("resources/explosion1_3.png"));
-			explosion1_4 = ImageIO.read(new File("resources/explosion1_4.png"));
-			explosion1_5 = ImageIO.read(new File("resources/explosion1_5.png"));
-			explosion1_6 = ImageIO.read(new File("resources/explosion1_6.png"));
-			explosion2_1 = ImageIO.read(new File("resources/explosion2_1.png"));
-			explosion2_2 = ImageIO.read(new File("resources/explosion2_2.png"));
-			explosion2_3 = ImageIO.read(new File("resources/explosion2_3.png"));
-			explosion2_4 = ImageIO.read(new File("resources/explosion2_4.png"));
-			explosion2_5 = ImageIO.read(new File("resources/explosion2_5.png"));
-			explosion2_6 = ImageIO.read(new File("resources/explosion2_6.png"));
-			explosion2_7 = ImageIO.read(new File("resources/explosion2_7.png"));
-			gameOver = ImageIO.read(new File("resources/gameOver.png"));
-			health = ImageIO.read(new File("resources/health.png"));
-			health1 = ImageIO.read(new File("resources/health1.png"));
-			health2 = ImageIO.read(new File("resources/health2.png"));
-			health3 = ImageIO.read(new File("resources/health3.png"));
-			island1 = ImageIO.read(new File("resources/island1.png"));
-			island2 = ImageIO.read(new File("resources/island2.png"));
-			island3 = ImageIO.read(new File("resources/island3.png"));
-			life = ImageIO.read(new File("resources/life.png"));
-			player1_1 = ImageIO.read(new File("resources/player1_1.png"));
-			player1_2 = ImageIO.read(new File("resources/player1_2.png"));
-			player1_3 = ImageIO.read(new File("resources/player1_3.png"));
-			power_up = ImageIO.read(new File("resources/power_up.png"));
-			score = ImageIO.read(new File("resources/score.png"));
-			water = ImageIO.read(new File("resources/water.png"));
-			youLose = ImageIO.read(new File("resources/youLose.png"));
-			youWin = ImageIO.read(new File("resources/youWin.png"));
+			big_bullet = ImageIO.read(new File("../resources/big_bullet.png"));
+			boss = ImageIO.read(new File("../resources/boss.png"));
+			bottom = ImageIO.read(new File("../resources/bottom.png"));
+			bullet = ImageIO.read(new File("../resources/bullet.png"));
+			bullet_left = ImageIO.read(new File("../resources/bullet_left.png"));
+			bullet_right = ImageIO.read(new File("../resources/bullet_right.png"));
+			enemy1_1 = ImageIO.read(new File("../resources/enemy1_1.png"));
+			enemy1_2 = ImageIO.read(new File("../resources/enemy1_2.png"));
+			enemy1_3 = ImageIO.read(new File("../resources/enemy1_3.png"));
+			enemy2_1 = ImageIO.read(new File("../resources/enemy2_1.png"));
+			enemy2_2 = ImageIO.read(new File("../resources/enemy2_2.png"));
+			enemy2_3 = ImageIO.read(new File("../resources/enemy2_3.png"));
+			enemy3_1 = ImageIO.read(new File("../resources/enemy3_1.png"));
+			enemy3_2 = ImageIO.read(new File("../resources/enemy3_2.png"));
+			enemy3_3 = ImageIO.read(new File("../resources/enemy3_3.png"));
+			enemy4_1 = ImageIO.read(new File("../resources/enemy4_1.png"));
+			enemy4_2 = ImageIO.read(new File("../resources/enemy4_2.png"));
+			enemy4_3 = ImageIO.read(new File("../resources/enemy4_3.png"));
+			enemy_bullet1 = ImageIO.read(new File("../resources/enemy_bullet1.png"));
+			enemy_bullet2 = ImageIO.read(new File("../resources/enemy_bullet2.png"));
+			explosion1_1 = ImageIO.read(new File("../resources/explosion1_1.png"));
+			explosion1_2 = ImageIO.read(new File("../resources/explosion1_2.png"));
+			explosion1_3 = ImageIO.read(new File("../resources/explosion1_3.png"));
+			explosion1_4 = ImageIO.read(new File("../resources/explosion1_4.png"));
+			explosion1_5 = ImageIO.read(new File("../resources/explosion1_5.png"));
+			explosion1_6 = ImageIO.read(new File("../resources/explosion1_6.png"));
+			explosion2_1 = ImageIO.read(new File("../resources/explosion2_1.png"));
+			explosion2_2 = ImageIO.read(new File("../resources/explosion2_2.png"));
+			explosion2_3 = ImageIO.read(new File("../resources/explosion2_3.png"));
+			explosion2_4 = ImageIO.read(new File("../resources/explosion2_4.png"));
+			explosion2_5 = ImageIO.read(new File("../resources/explosion2_5.png"));
+			explosion2_6 = ImageIO.read(new File("../resources/explosion2_6.png"));
+			explosion2_7 = ImageIO.read(new File("../resources/explosion2_7.png"));
+			gameOver = ImageIO.read(new File("../resources/gameOver.png"));
+			health = ImageIO.read(new File("../resources/health.png"));
+			health1 = ImageIO.read(new File("../resources/health1.png"));
+			health2 = ImageIO.read(new File("../resources/health2.png"));
+			health3 = ImageIO.read(new File("../resources/health3.png"));
+			island1 = ImageIO.read(new File("../resources/island1.png"));
+			island2 = ImageIO.read(new File("../resources/island2.png"));
+			island3 = ImageIO.read(new File("../resources/island3.png"));
+			life = ImageIO.read(new File("../resources/life.png"));
+			player1_1 = ImageIO.read(new File("../resources/player1_1.png"));
+			player1_2 = ImageIO.read(new File("../resources/player1_2.png"));
+			player1_3 = ImageIO.read(new File("../resources/player1_3.png"));
+			power_up = ImageIO.read(new File("../resources/power_up.png"));
+			score = ImageIO.read(new File("../resources/score.png"));
+			water = ImageIO.read(new File("../resources/water.png"));
+			youLose = ImageIO.read(new File("../resources/youLose.png"));
+			youWin = ImageIO.read(new File("../resources/youWin.png"));
 
 		} catch (IOException ioException) {
 			ioException.printStackTrace();
@@ -111,7 +111,7 @@ public class Resources {
 		public ResourceSpec(String name) {
 			parser = new JSONParser();
 			try {
-				JSONObject jsonObject = (JSONObject) parser.parse(new FileReader("resources.json"));
+				JSONObject jsonObject = (JSONObject) parser.parse(new FileReader("../resources.json"));
 				JSONObject objectSpecifications = (JSONObject) jsonObject.get(name);
 				JSONObject bounds = (JSONObject) objectSpecifications.get("bounds");
 				JSONArray center = (JSONArray) bounds.get("center");
@@ -134,7 +134,6 @@ public class Resources {
 					shapes.add(new Shape((String) shape.get("type"), params));
 				}
 			} catch (Exception exception) {
-				System.out.println(name);
 				exception.printStackTrace();
 			}
 		}

@@ -30,8 +30,8 @@ public class ResourceClassBuilder {
 		String resourcePath = "C:\\Users\\arodr101\\Desktop\\Wingman\\Resources";
 		String resourcesText = "C:\\Users\\arodr101\\Desktop\\Wingman\\resources.txt";
 
-		// String jarRun = "../";
-		String jarRun = "";
+		String jarRun = "../"; // Applet Configuration
+		// String jarRun = ""; // Jar Configuration
 
 		System.out.println("Getting resources.txt");
 		try (BufferedReader br = new BufferedReader(new FileReader(resourcesText))) {
@@ -156,7 +156,7 @@ public class ResourceClassBuilder {
 			writer.write(newline);
 			writer.write(tab + tab + "// Bounds" + newline);
 			writer.write(tab + tab + "public double center_x, center_y, top, bottom, left, right;" + newline);
-			writer.write(tab + tab + "public int number_of_shapes;" + newline);
+			writer.write(tab + tab + "public long number_of_shapes;" + newline);
 			writer.write(newline);
 			writer.write(tab + tab + "private JSONParser parser;" + newline);
 			writer.write(newline);
@@ -170,16 +170,16 @@ public class ResourceClassBuilder {
 			writer.write(tab + tab + tab + tab + "JSONObject bounds = (JSONObject) objectSpecifications.get(\"bounds\");" + newline);
 			writer.write(tab + tab + tab + tab + "JSONArray center = (JSONArray) bounds.get(\"center\");" + newline);
 			writer.write(newline);
-			writer.write(tab + tab + tab + tab + "this.center_x = (double) center.get(0);" + newline);
-			writer.write(tab + tab + tab + tab + "this.center_y = (double) center.get(1);" + newline);
+			writer.write(tab + tab + tab + tab + "this.center_x = (double) Double.parseDouble(center.get(0).toString());" + newline);
+			writer.write(tab + tab + tab + tab + "this.center_y = (double) Double.parseDouble(center.get(1).toString());" + newline);
 			writer.write(newline);
-			writer.write(tab + tab + tab + tab + "this.top = (double) bounds.get(\"top_edge\");" + newline);
-			writer.write(tab + tab + tab + tab + "this.bottom = (double) bounds.get(\"bottom_edge\");" + newline);
-			writer.write(tab + tab + tab + tab + "this.left = (double) bounds.get(\"left_edge\");" + newline);
-			writer.write(tab + tab + tab + tab + "this.right = (double) bounds.get(\"right_edge\");" + newline);
+			writer.write(tab + tab + tab + tab + "this.top = (double) Double.parseDouble(bounds.get(\"top_edge\").toString());" + newline);
+			writer.write(tab + tab + tab + tab + "this.bottom = (double) Double.parseDouble(bounds.get(\"bottom_edge\").toString());" + newline);
+			writer.write(tab + tab + tab + tab + "this.left = (double) Double.parseDouble(bounds.get(\"left_edge\").toString());" + newline);
+			writer.write(tab + tab + tab + tab + "this.right = (double) Double.parseDouble(bounds.get(\"right_edge\").toString());" + newline);
 			writer.write(newline);
 			writer.write(tab + tab + tab + tab + "JSONObject collision = (JSONObject) objectSpecifications.get(\"collision\");" + newline);
-			writer.write(tab + tab + tab + tab + "this.number_of_shapes = (int) collision.get(\"number_of_shapes\");" + newline);
+			writer.write(tab + tab + tab + tab + "this.number_of_shapes = (long) Long.parseLong(collision.get(\"number_of_shapes\").toString());" + newline);
 			writer.write(newline);
 			writer.write(tab + tab + tab + tab + "JSONObject JSONshapes = (JSONObject) collision.get(\"shapes\");" + newline);
 			writer.write(tab + tab + tab + tab + "for (int i = 1; i <= number_of_shapes; i++) {" + newline);
@@ -194,15 +194,15 @@ public class ResourceClassBuilder {
 			writer.write(newline);
 			writer.write(tab + tab + "public class Shape {" + newline);
 			writer.write(newline);
-			writer.write(tab + tab + tab + "public int x, y, width, height;" + newline);
+			writer.write(tab + tab + tab + "public long x, y, width, height;" + newline);
 			writer.write(tab + tab + tab + "public String type;" + newline);
 			writer.write(newline);
 			writer.write(tab + tab + tab + "public Shape(String type, JSONArray array) {" + newline);
 			writer.write(tab + tab + tab + tab + "this.type = type;" + newline);
-			writer.write(tab + tab + tab + tab + "this.x = (int) array.get(0);" + newline);
-			writer.write(tab + tab + tab + tab + "this.y = (int) array.get(1);" + newline);
-			writer.write(tab + tab + tab + tab + "this.width = (int) array.get(2);" + newline);
-			writer.write(tab + tab + tab + tab + "this.height = (int) array.get(3);" + newline);
+			writer.write(tab + tab + tab + tab + "this.x = (long) Long.parseLong(array.get(0).toString());" + newline);
+			writer.write(tab + tab + tab + tab + "this.y = (long) Long.parseLong(array.get(1).toString());" + newline);
+			writer.write(tab + tab + tab + tab + "this.width = (long) Long.parseLong(array.get(2).toString());" + newline);
+			writer.write(tab + tab + tab + tab + "this.height = (long) Long.parseLong(array.get(3).toString());" + newline);
 			writer.write(tab + tab + tab + "}" + newline);
 			writer.write(tab + tab + "}" + newline);
 			writer.write(tab + "}" + newline);
