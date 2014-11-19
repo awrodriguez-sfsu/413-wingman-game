@@ -15,20 +15,9 @@ import org.json.simple.parser.JSONParser;
 public class Resources {
 
 	private static Resources instance;
-	public Image big_bullet, boss, bottom, bullet, bullet_left, bullet_right, 
-				enemy1_1, enemy1_2, enemy1_3, enemy2_1, enemy2_2, 
-				enemy2_3, enemy3_1, enemy3_2, enemy3_3, enemy4_1, 
-				enemy4_2, enemy4_3, enemy_bullet1, enemy_bullet2, explosion1_1, 
-				explosion1_2, explosion1_3, explosion1_4, explosion1_5, explosion1_6, 
-				explosion2_1, explosion2_2, explosion2_3, explosion2_4, explosion2_5, 
-				explosion2_6, explosion2_7, gameOver, health, health1, 
-				health2, health3, island1, island2, island3, 
-				life, player1_1, player1_2, player1_3, power_up, 
-				score, water, youLose, youWin;
+	public Image big_bullet, boss, bottom, bullet, bullet_left, bullet_right, enemy1_1, enemy1_2, enemy1_3, enemy2_1, enemy2_2, enemy2_3, enemy3_1, enemy3_2, enemy3_3, enemy4_1, enemy4_2, enemy4_3, enemy_bullet1, enemy_bullet2, explosion1_1, explosion1_2, explosion1_3, explosion1_4, explosion1_5, explosion1_6, explosion2_1, explosion2_2, explosion2_3, explosion2_4, explosion2_5, explosion2_6, explosion2_7, gameOver, health, health1, health2, health3, island1, island2, island3, life, player1_1, player1_2, player1_3, power_up, score, water, youLose, youWin;
 
-	public ResourceSpec big_bullet_spec, bullet_spec, bullet_left_spec, bullet_right_spec, enemy_bullet1_spec, enemy_bullet2_spec, 
-				enemy1_spec, enemy2_spec, enemy3_spec, enemy4_spec, player1_spec, 
-				power_up_spec;
+	public ResourceSpec big_bullet_spec, bullet_spec, bullet_left_spec, bullet_right_spec, enemy_bullet1_spec, enemy_bullet2_spec, enemy1_spec, enemy2_spec, enemy3_spec, enemy4_spec, player1_spec, power_up_spec;
 
 	private Resources() {
 		try {
@@ -111,8 +100,8 @@ public class Resources {
 
 	public class ResourceSpec {
 
-		//Bounds
-		public double center_x, center_y, top, bottom , left, right;
+		// Bounds
+		public double center_x, center_y, top, bottom, left, right;
 		public int number_of_shapes;
 
 		private JSONParser parser;

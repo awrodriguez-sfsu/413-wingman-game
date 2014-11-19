@@ -152,7 +152,7 @@ public class ResourceClassBuilder {
 			writer.write(tab + "public class ResourceSpec {" + newline);
 			writer.write(newline);
 			writer.write(tab + tab + "// Bounds" + newline);
-			writer.write(tab + tab + "public double center_x, center_y, top, bottom , left, right;" + newline);
+			writer.write(tab + tab + "public double center_x, center_y, top, bottom, left, right;" + newline);
 			writer.write(tab + tab + "public int number_of_shapes;" + newline);
 			writer.write(newline);
 			writer.write(tab + tab + "private JSONParser parser;" + newline);
