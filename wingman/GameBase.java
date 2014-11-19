@@ -73,9 +73,9 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 
 	private void setupImages() {
 		mainCharacter = new Animation();
-		mainCharacter.addFrame(Resources.getInstance().myplane_1, 100);
-		mainCharacter.addFrame(Resources.getInstance().myplane_2, 100);
-		mainCharacter.addFrame(Resources.getInstance().myplane_3, 100);
+		mainCharacter.addFrame(Resources.getInstance().player1_1, 100);
+		mainCharacter.addFrame(Resources.getInstance().player1_2, 100);
+		mainCharacter.addFrame(Resources.getInstance().player1_3, 100);
 
 		enemy1 = new Animation();
 		enemy1.addFrame(Resources.getInstance().enemy1_1, 100);
@@ -110,17 +110,16 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 		island3.addFrame(Resources.getInstance().island3, 1);
 
 		mainCharacterPrimaryWeapon = new Animation();
-		mainCharacterPrimaryWeapon.addFrame(Resources.getInstance().bullet_up, 1);
+		mainCharacterPrimaryWeapon.addFrame(Resources.getInstance().bullet, 1);
 
 		mainCharacterSecondaryWeapon = new Animation();
-		mainCharacterSecondaryWeapon.addFrame(Resources.getInstance().bigBullet, 1);
+		mainCharacterSecondaryWeapon.addFrame(Resources.getInstance().big_bullet, 1);
 
 		enemyWeapon1 = new Animation();
-		enemyWeapon1.addFrame(Resources.getInstance().enemybullet1, 200);
-		enemyWeapon1.addFrame(Resources.getInstance().enemybullet2, 800);
+		enemyWeapon1.addFrame(Resources.getInstance().enemy_bullet1, 1);
 
 		enemyWeapon2 = new Animation();
-		enemyWeapon2.addFrame(Resources.getInstance().bigBullet, 1);
+		enemyWeapon2.addFrame(Resources.getInstance().enemy_bullet2, 1);
 
 		animations.put(AnimationType.MAIN_CHARACTER, mainCharacter);
 		animations.put(AnimationType.ENEMY1, enemy1);

@@ -1,8 +1,5 @@
 package projectiles;
 
-import java.awt.geom.Ellipse2D;
-
-import shapes.Circle;
 import enums.AnimationType;
 
 /**

@@ -198,7 +198,9 @@ public class MainActor extends Actor {
 
 		for (int i = 0; i < wingman.length; i++) {
 			for (int j = 0; j < enemy.length; j++) {
-				if (!actor.isExploding() && wingman[i].intersects(enemy[j])) {
+				if (!actor.isExploding() && circle.intersects(enemy[i])) {
+					// if (!actor.isExploding() &&
+					// wingman[i].intersects(enemy[j])) {
 					return true;
 				}
 			}
