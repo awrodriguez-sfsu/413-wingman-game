@@ -1,21 +1,24 @@
 package projectiles;
 
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.image.ImageObserver;
+import java.util.ArrayList;
 
+import shapes.CollisionCircle;
+import shapes.CollisionRectangle;
+import wingman.Resources;
+import actors.Actor;
 import enums.AnimationType;
 import enums.GameObjectType;
-import wingman.GameObject;
 
 /**
  * @author Anthony Rodriguez
  *
  */
-public abstract class Projectile extends GameObject {
+public class Projectile extends Actor {
 
-	private Rectangle rectangle1 = new Rectangle(0, 0, 0, 0);
-	private Rectangle rectangle2 = new Rectangle(0, 0, 0, 0);
+	private final int MOVEMENT_SPEED = 5;
+	private int y_speed = 0;
+
+	protected AnimationType shooter;
 
 	/**
 	 * @param image
@@ -23,43 +26,125 @@ public abstract class Projectile extends GameObject {
 	 * @param x_pos
 	 * @param y_pos
 	 */
-	public Projectile(AnimationType image, int x_pos, int y_pos) {
-		super(image, GameObjectType.PROJECTILE, x_pos, y_pos);
-		// TODO Auto-generated constructor stub
+	public Projectile(AnimationType image, AnimationType shooter, int x_pos, int y_pos) {
+		super(image, GameObjectType.PROJECTILE, getX(x_pos, shooter, image), getY(y_pos, shooter));
+		this.shooter = shooter;
 	}
 
-	/**
-	 * @param rectangle1 the rectangle1 to set
-	 */
-	public void setRectangle1(int x, int y, int width, int height) {
-		this.rectangle1.setRect(x, y, width, height);
-		this.rectangle1.setBounds(rectangle1);
+	private static int getX(int x_pos, AnimationType shooter, AnimationType type) {
+		return (int) ( Resources.getSpec(shooter.getName()).center_x + x_pos - Resources.getSpec(type.getName()).center_x );
 	}
 
-	/**
-	 * @param rectangle2 the rectangle2 to set
-	 */
-	public void setRectangle2(int x, int y, int width, int height) {
-		this.rectangle2.setRect(x, y, width, height);
-		this.rectangle2.setBounds(rectangle2);
+	private static int getY(int y_pos, AnimationType shooter) {
+		return (int) ( Resources.getSpec(shooter.getName()).front + y_pos );
 	}
 
-	public Rectangle[] getAllRectangles() {
-		Rectangle[] allRectangles = new Rectangle[3];
+	@Override
+	public void update(int width, int height) {
 
-		allRectangles[0] = rectangle1;
-		allRectangles[1] = rectangle2;
+		if (shooter == AnimationType.PLAYER1) {
+			moveUp();
+		} else if (shooter == AnimationType.ENEMY4) {
+			moveUp();
+		} else {
+			moveDown();
+		}
 
-		return allRectangles;
+		y_pos += y_speed;
+
+		for (int i = 0; i < getCollisionCircles().size(); i++) {
+			getCollisionCircles().get(i).update(x_pos, y_pos);
+		}
+
+		for (int i = 0; i < getCollisionRectangles().size(); i++) {
+			getCollisionRectangles().get(i).update(x_pos, y_pos);
+		}
 	}
 
-	public void drawCollisionRect(Graphics graphics, ImageObserver observer) {
-		graphics.drawRect(rectangle1.x, rectangle1.y, rectangle1.width, rectangle1.height);
-		graphics.drawRect(rectangle2.x, rectangle2.y, rectangle2.width, rectangle2.height);
+	public void moveUp() {
+		y_speed = -MOVEMENT_SPEED;
 	}
 
-	public abstract void update(int width, int height);
+	public void moveDown() {
+		y_speed = MOVEMENT_SPEED;
+	}
 
-	public abstract boolean isVisible();
+	public boolean isVisible() {
+		return y_pos > -5 || y_pos < 800;
+	}
 
+	public boolean isColliding(Actor actor) {
+		ArrayList<CollisionCircle> projectileCircles = getCollisionCircles();
+		ArrayList<CollisionRectangle> projectileRectangles = getCollisionRectangles();
+		ArrayList<CollisionCircle> actorCircles = actor.getCollisionCircles();
+		ArrayList<CollisionRectangle> actorRectangles = actor.getCollisionRectangles();
+
+		for (int i = 0; i < projectileCircles.size(); i++) {
+			for (int j = 0; j < actorCircles.size(); j++) {
+				if (projectileCircles.get(i).intersects(actorCircles.get(j).getBounds2D())) {
+					return true;
+				}
+			}
+
+			for (int j = 0; j < actorRectangles.size(); j++) {
+				if (projectileCircles.get(i).intersects(actorRectangles.get(j))) {
+					return true;
+				}
+			}
+		}
+
+		for (int i = 0; i < projectileRectangles.size(); i++) {
+			for (int j = 0; j < actorCircles.size(); j++) {
+				if (projectileRectangles.get(i).intersects(actorCircles.get(j).getBounds2D())) {
+					return true;
+				}
+			}
+
+			for (int j = 0; j < actorRectangles.size(); j++) {
+				if (projectileRectangles.get(i).intersects(actorRectangles.get(j))) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	@Override
+	public void moveLeft() {}
+
+	@Override
+	public void moveRight() {}
+
+	@Override
+	public void moveUpLeft() {}
+
+	@Override
+	public void moveUpRight() {}
+
+	@Override
+	public void moveDownLeft() {}
+
+	@Override
+	public void moveDownRight() {}
+
+	@Override
+	public void firePrimary() {}
+
+	@Override
+	public void fireSecondary() {}
+
+	@Override
+	public void explode() {}
+
+	@Override
+	public boolean isAlive() {
+		return false;
+	}
+
+	@Override
+	public void setAlive(boolean isAlive) {}
+
+	@Override
+	public void removeCollision() {}
 }

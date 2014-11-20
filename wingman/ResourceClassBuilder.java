@@ -25,10 +25,16 @@ public class ResourceClassBuilder {
 	private static ArrayList<String> withSpecs = new ArrayList<String>();
 
 	public static void main(String[] args) {
-		// String resourcePath = "/home/arod/Desktop/Resources";
+		String resourcePath = "/home/arod/Desktop//Wingman/Resources";
+		String resourcesText = "/home/arod/Desktop/Wingman/resources.txt";
+		String resourcesJSON = "/home/arod/Desktop/Wingman/resources.json";
 		// String resourcePath = "Resources";
-		String resourcePath = "C:\\Users\\arodr101\\Desktop\\Wingman\\Resources";
-		String resourcesText = "C:\\Users\\arodr101\\Desktop\\Wingman\\resources.txt";
+		// String resourcePath =
+		// "C:\\Users\\arodr101\\Desktop\\Wingman\\Resources";
+		// String resourcesText =
+		// "C:\\Users\\arodr101\\Desktop\\Wingman\\resources.txt";
+		// String resourcesJSON =
+		// "C:\\Users\\arodr101\\Desktop\\Wingman\\resources.json";
 
 		String jarRun = "../"; // Applet Configuration
 		// String jarRun = ""; // Jar Configuration
@@ -65,7 +71,7 @@ public class ResourceClassBuilder {
 
 		FileUtilities.copyDirectory(resourcePath, directory.getAbsolutePath());
 
-		FileUtilities.copyFile(new File("C:\\Users\\arodr101\\Desktop\\Wingman\\resources.json"), new File("resources.json"));
+		FileUtilities.copyFile(new File(resourcesJSON), new File("resources.json"));
 
 		System.out.println("Writing Resources.java");
 		Writer writer = null;

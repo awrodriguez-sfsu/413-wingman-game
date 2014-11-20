@@ -3,13 +3,13 @@
  */
 package actors;
 
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.image.ImageObserver;
+import java.util.ArrayList;
 
-import projectiles.PrimaryWeapon;
-import projectiles.SecondaryWeapon;
-import shapes.Circle;
+import animations.Animation;
+import projectiles.Projectile;
+import shapes.CollisionCircle;
+import shapes.CollisionRectangle;
+import wingman.Resources;
 import enums.AnimationType;
 import enums.GameObjectType;
 
@@ -22,9 +22,9 @@ public class MainActor extends Actor {
 	private AnimationType primaryWeapon;
 	private AnimationType secondaryWeapon;
 
-	private final float MOVEMENT_SPEED = 3.5f;
+	private final double MOVEMENT_SPEED = 3.5;
 
-	public Circle circle;
+	private boolean isAlive;
 
 	/**
 	 * @param image
@@ -36,7 +36,7 @@ public class MainActor extends Actor {
 		super(image, GameObjectType.PLAYER1, x_pos, y_pos);
 		this.primaryWeapon = primaryWeapon;
 		this.secondaryWeapon = secondaryWeapon;
-		circle = new Circle(x_pos, y_pos, 64);
+		this.isAlive = true;
 	}
 
 	/*
@@ -45,6 +45,7 @@ public class MainActor extends Actor {
 	 */
 	@Override
 	public void update(int width, int height) {
+
 		if (isMovingLeft() || isMovingRight()) {
 			x_pos += x_speed;
 		}
@@ -53,25 +54,29 @@ public class MainActor extends Actor {
 			y_pos += y_speed;
 		}
 
-		if (x_pos <= 5) {
-			x_pos = 5;
+		if (x_pos <= -left_edge + GAME_BORDER) {
+			x_pos = (int) ( -left_edge + GAME_BORDER );
 		}
 
-		if (x_pos >= width - 50) {
-			x_pos = width - 50;
+		if (x_pos >= width - right_edge - GAME_BORDER) {
+			x_pos = (int) ( width - right_edge - GAME_BORDER );
 		}
 
-		if (y_pos <= 50) {
-			y_pos = 50;
+		if (y_pos <= top_edge + GAME_BORDER) {
+			y_pos = (int) ( top_edge + GAME_BORDER );
 		}
 
-		if (y_pos >= height - 50) {
-			y_pos = height - 50;
+		if (y_pos >= height - bottom_edge - GAME_BORDER) {
+			y_pos = (int) ( height - bottom_edge - GAME_BORDER );
 		}
-	}
 
-	public void drawCircle(Graphics graphics, ImageObserver observer) {
-		graphics.drawOval((int) circle.getX(), (int) circle.getY(), (int) circle.getWidth(), (int) circle.getWidth());
+		for (int i = 0; i < getCollisionCircles().size(); i++) {
+			getCollisionCircles().get(i).update(x_pos, y_pos);
+		}
+
+		for (int i = 0; i < getCollisionRectangles().size(); i++) {
+			getCollisionRectangles().get(i).update(x_pos, y_pos);
+		}
 	}
 
 	@Override
@@ -161,8 +166,8 @@ public class MainActor extends Actor {
 	@Override
 	public void firePrimary() {
 		if (canFirePrimary()) {
-			PrimaryWeapon pShot = new PrimaryWeapon(primaryWeapon, x_pos, y_pos);
-			primaryWeaponShots.add(pShot);
+			Projectile pShot = new Projectile(primaryWeapon, AnimationType.PLAYER1, x_pos, y_pos);
+			shots.add(pShot);
 			setCanFirePrimary(false);
 		}
 	}
@@ -170,15 +175,28 @@ public class MainActor extends Actor {
 	@Override
 	public void fireSecondary() {
 		if (canFireSecondary()) {
-			SecondaryWeapon sShot = new SecondaryWeapon(secondaryWeapon, x_pos, y_pos);
-			secondaryWeaponShots.add(sShot);
+			Projectile sShot = new Projectile(secondaryWeapon, AnimationType.PLAYER1, x_pos, y_pos);
+			shots.add(sShot);
 			setCanFireSecondary(false);
 		}
 	}
 
 	@Override
 	public void explode() {
-		// setAnimation();
+		setExploding(true);
+
+		clearCollisions();
+
+		Animation animation = new Animation(true);
+		animation.addFrame(Resources.getInstance().explosion2_1, 250);
+		animation.addFrame(Resources.getInstance().explosion2_2, 250);
+		animation.addFrame(Resources.getInstance().explosion2_3, 250);
+		animation.addFrame(Resources.getInstance().explosion2_4, 250);
+		animation.addFrame(Resources.getInstance().explosion2_5, 250);
+		animation.addFrame(Resources.getInstance().explosion2_6, 250);
+		animation.addFrame(Resources.getInstance().explosion2_7, 250);
+
+		setAnimation(animation);
 	}
 
 	@Override
@@ -187,15 +205,47 @@ public class MainActor extends Actor {
 	}
 
 	@Override
-	public boolean isColliding(Actor actor) {
-		Rectangle[] wingman = getAllRectangles();
-		Rectangle[] enemy = actor.getAllRectangles();
+	public boolean isAlive() {
+		return isAlive;
+	}
 
-		for (int i = 0; i < wingman.length; i++) {
-			for (int j = 0; j < enemy.length; j++) {
-				if (!actor.isExploding() && circle.intersects(enemy[i])) {
-					// if (!actor.isExploding() &&
-					// wingman[i].intersects(enemy[j])) {
+	@Override
+	public void setAlive(boolean isAlive) {
+		this.isAlive = isAlive;
+	}
+
+	@Override
+	public boolean isColliding(Actor actor) {
+		ArrayList<CollisionCircle> playerCircles = getCollisionCircles();
+		ArrayList<CollisionRectangle> playerRectangles = getCollisionRectangles();
+		ArrayList<CollisionCircle> actorCircles = actor.getCollisionCircles();
+		ArrayList<CollisionRectangle> actorRectangles = actor.getCollisionRectangles();
+
+		for (int i = 0; i < playerCircles.size(); i++) {
+			for (int j = 0; j < actorCircles.size(); j++) {
+				if (playerCircles.get(i).intersects(actorCircles.get(j).getBounds2D())) {
+					System.out.println("Player Cicle with Actor Circle");
+					return true;
+				}
+			}
+
+			for (int j = 0; j < actorRectangles.size(); j++) {
+				if (playerCircles.get(i).intersects(actorRectangles.get(j))) {
+					System.out.println("Player Cicle with Actor Rectangle");
+					return true;
+				}
+			}
+		}
+
+		for (int i = 0; i < playerRectangles.size(); i++) {
+			for (int j = 0; j < actorCircles.size(); j++) {
+				if (playerRectangles.get(i).intersects(actorCircles.get(j).getBounds2D())) {
+					return true;
+				}
+			}
+
+			for (int j = 0; j < actorRectangles.size(); j++) {
+				if (playerRectangles.get(i).intersects(actorRectangles.get(j))) {
 					return true;
 				}
 			}
@@ -204,4 +254,8 @@ public class MainActor extends Actor {
 		return false;
 	}
 
+	@Override
+	public void removeCollision() {
+
+	}
 }

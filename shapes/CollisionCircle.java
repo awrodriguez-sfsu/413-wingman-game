@@ -10,14 +10,22 @@ import java.awt.geom.Rectangle2D;
  * @author arod
  *
  */
-public class Circle extends Ellipse2D {
+public class CollisionCircle extends Ellipse2D {
 
-	private int x, y, radius;
+	private long x_pos, y_pos, width, height;
+	private long x, y;
+	private String type;
 
-	public Circle(int x, int y, int radius) {
+	public CollisionCircle(long x, long y, long width, long height) {
 		this.x = x;
 		this.y = y;
-		this.radius = radius;
+		this.width = width;
+		this.height = height;
+		this.type = "circle";
+	}
+
+	public String getType() {
+		return type;
 	}
 
 	@Override
@@ -27,22 +35,22 @@ public class Circle extends Ellipse2D {
 
 	@Override
 	public double getHeight() {
-		return radius;
+		return height;
 	}
 
 	@Override
 	public double getWidth() {
-		return radius;
+		return width;
 	}
 
 	@Override
 	public double getX() {
-		return x;
+		return x + x_pos;
 	}
 
 	@Override
 	public double getY() {
-		return y;
+		return y + y_pos;
 	}
 
 	@Override
@@ -53,8 +61,8 @@ public class Circle extends Ellipse2D {
 	@Override
 	public void setFrame(double x, double y, double width, double height) {}
 
-	public void update(int x, int y) {
-		this.x = x;
-		this.y = y;
+	public void update(long x_pos, long y_pos) {
+		this.x_pos = x_pos;
+		this.y_pos = y_pos;
 	}
 }

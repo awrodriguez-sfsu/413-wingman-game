@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import wingman.GameObject;
 import actors.Enemy;
+import actors.MainActor;
 import enums.GameObjectType;
 
 /**
@@ -54,6 +55,8 @@ public class Animation {
 				if (animationTime >= totalDuration) {
 					if (object.getType() == GameObjectType.ENEMY) {
 						( (Enemy) object ).setAlive(false);
+					} else if (object.getType() == GameObjectType.PLAYER1) {
+						( (MainActor) object ).setAlive(false);
 					}
 					frames.clear();
 					animationTime = animationTime % totalDuration;

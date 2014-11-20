@@ -6,11 +6,11 @@ package actors;
 import java.awt.Dimension;
 import java.util.Random;
 
+import projectiles.Projectile;
 import wingman.GameBase;
 import wingman.Resources;
 import animations.Animation;
 import enums.AnimationType;
-import enums.EnemyType;
 import enums.GameObjectType;
 
 /**
@@ -21,7 +21,15 @@ public class Enemy extends Actor {
 
 	private final float MOVEMENT_SPEED;
 
-	private EnemyType enemyType;
+	private boolean isAlive;
+
+	private int actionTime = 0;
+
+	private int primaryVolley = 4;
+
+	private int secondaryVolley = 2;
+
+	private AnimationType type;
 
 	private Dimension dimension;
 
@@ -30,19 +38,15 @@ public class Enemy extends Actor {
 	private AnimationType primaryWeapon;
 	private AnimationType secondaryWeapon;
 
-	private AnimationType explosion;
-
-	private Animation animation = null;
-
 	/**
 	 * @param image
 	 * @param x_pos
 	 * @param y_pos
 	 */
-	public Enemy(AnimationType image, AnimationType primaryWeapon, AnimationType secondaryWeapon, AnimationType explosion, EnemyType type, Random generator, Dimension dimension) {
+	public Enemy(AnimationType image, AnimationType primaryWeapon, AnimationType secondaryWeapon, Random generator, Dimension dimension) {
 		super(image, GameObjectType.ENEMY, ( Math.abs(generator.nextInt() % dimension.width) ), -( Math.abs(generator.nextInt(( 700 - 100 ) + 1) + 100) ));
 
-		if (type == EnemyType.ENEMY4) {
+		if (image == AnimationType.ENEMY4) {
 			y_pos = -y_pos + dimension.height;
 			MOVEMENT_SPEED = 1f;
 		} else {
@@ -51,35 +55,83 @@ public class Enemy extends Actor {
 
 		this.dimension = dimension;
 		this.generator = generator;
-		this.enemyType = type;
+		this.type = image;
 
 		this.primaryWeapon = primaryWeapon;
 		this.secondaryWeapon = secondaryWeapon;
-		this.explosion = explosion;
+		this.isAlive = true;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see actors.Actor#isVisible()
-	 */
 	@Override
 	public boolean isVisible() {
-		if (enemyType == EnemyType.ENEMY4) {
-			return !( x_pos > dimension.width || y_pos < 0 || x_pos < 0 );
+		if (type == AnimationType.ENEMY4) {
+			return !( y_pos < -bottom_edge );
 		} else {
-			return !( x_pos > dimension.width || y_pos > dimension.height || x_pos < 0 );
+			return !( y_pos > dimension.height );
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see actors.Actor#update(int, int)
-	 */
+	@Override
+	public boolean isAlive() {
+		return isAlive;
+	}
+
+	@Override
+	public void setAlive(boolean isAlive) {
+		this.isAlive = isAlive;
+	}
+
 	@Override
 	public void update(int width, int height) {
 		dimension = GameBase.getDimension();
 
-		int action = generator.nextInt(6) + 1;
+		if (actionTime > 1000) {
+			int action = generator.nextInt(5) + 1;
+			switch (action) {
+				case 1: // Main movement direction
+					if (!isMovingLeft() && !isMovingRight()) {
+						setMovingUp(type == AnimationType.ENEMY4);
+						setMovingDown(type == AnimationType.ENEMY4);
+						setMovingLeft(false);
+						setMovingRight(false);
+					}
+					break;
+				case 2: // Left movement
+					if (!isMovingLeft() && !isMovingRight()) {
+						setMovingUp(type == AnimationType.ENEMY4);
+						setMovingDown(type == AnimationType.ENEMY4);
+						setMovingLeft(true);
+						setMovingRight(false);
+					}
+					break;
+				case 3: // Right movement
+					if (!isMovingLeft() && !isMovingRight()) {
+						setMovingUp(type == AnimationType.ENEMY4);
+						setMovingDown(type == AnimationType.ENEMY4);
+						setMovingLeft(false);
+						setMovingRight(true);
+					}
+					break;
+				case 4:
+					if (canFirePrimary()) {
+						firePrimary();
+					} else {
+						setCanFirePrimary(true);
+					}
+					break;
+				case 5:
+					if (canFireSecondary()) {
+						fireSecondary();
+					} else {
+						setCanFireSecondary(true);
+					}
+					break;
+				default:
+					System.out.println("6?");
+					break;
+			}
+			actionTime = -16;
+		}
 
 		if (isMovingUp()) {
 			y_pos -= MOVEMENT_SPEED;
@@ -89,42 +141,44 @@ public class Enemy extends Actor {
 			y_pos += MOVEMENT_SPEED;
 		}
 
-		switch (enemyType) {
-			case ENEMY1:
-				setRectangleWings(x_pos, y_pos + 15, 32, 10);
-				setRectangleBodyTop(x_pos + 9, y_pos + 1, 14, 14);
-				setRectangleBodyBottom(x_pos + 11, y_pos + 25, 10, 7);
-				break;
-			case ENEMY2:
-				setRectangleWings(x_pos, y_pos + 15, 32, 10);
-				setRectangleBodyTop(x_pos + 10, y_pos, 12, 15);
-				setRectangleBodyBottom(x_pos + 11, y_pos + 25, 10, 7);
-				break;
-			case ENEMY3:
-				setRectangleWings(x_pos, y_pos + 15, 32, 10);
-				setRectangleBodyTop(x_pos + 9, y_pos + 1, 14, 14);
-				setRectangleBodyBottom(x_pos + 11, y_pos + 25, 10, 7);
-				break;
-			case ENEMY4:
-				setRectangleWings(x_pos, y_pos + 7, 32, 10);
-				setRectangleBodyTop(x_pos + 11, y_pos, 10, 7);
-				setRectangleBodyBottom(x_pos + 8, y_pos + 17, 16, 15);
-				break;
+		if (isMovingLeft()) {
+			x_pos -= MOVEMENT_SPEED;
 		}
 
-		if (animation != null) {
-			animation.update(17, this);
+		if (isMovingRight()) {
+			x_pos += MOVEMENT_SPEED;
 		}
+
+		// Boundaries
+		if (x_pos <= -left_edge + GAME_BORDER) {
+			x_pos = (int) ( -left_edge + GAME_BORDER );
+			setMovingLeft(false);
+		}
+
+		if (x_pos >= width - right_edge - GAME_BORDER) {
+			x_pos = (int) ( width - right_edge - GAME_BORDER );
+			setMovingRight(false);
+		}
+
+		for (int i = 0; i < getCollisionCircles().size(); i++) {
+			getCollisionCircles().get(i).update(x_pos, y_pos);
+		}
+
+		for (int i = 0; i < getCollisionRectangles().size(); i++) {
+			getCollisionRectangles().get(i).update(x_pos, y_pos);
+		}
+
+		actionTime += 16;
 	}
 
 	@Override
 	public boolean isMovingUp() {
-		return ( enemyType == EnemyType.ENEMY4 ) && !isExploding();
+		return ( type == AnimationType.ENEMY4 ) && !isExploding();
 	}
 
 	@Override
 	public boolean isMovingDown() {
-		return !( enemyType == EnemyType.ENEMY4 ) && !isExploding();
+		return !( type == AnimationType.ENEMY4 ) && !isExploding();
 	}
 
 	/*
@@ -133,8 +187,7 @@ public class Enemy extends Actor {
 	 */
 	@Override
 	public void moveUp() {
-		// TODO Auto-generated method stub
-
+		y_pos -= MOVEMENT_SPEED + 1;
 	}
 
 	/*
@@ -143,8 +196,7 @@ public class Enemy extends Actor {
 	 */
 	@Override
 	public void moveDown() {
-		// TODO Auto-generated method stub
-
+		y_pos += MOVEMENT_SPEED;
 	}
 
 	/*
@@ -170,40 +222,28 @@ public class Enemy extends Actor {
 	 * @see actors.Actor#moveUpLeft()
 	 */
 	@Override
-	public void moveUpLeft() {
-		// TODO Auto-generated method stub
-
-	}
+	public void moveUpLeft() {}
 
 	/*
 	 * (non-Javadoc)
 	 * @see actors.Actor#moveUpRight()
 	 */
 	@Override
-	public void moveUpRight() {
-		// TODO Auto-generated method stub
-
-	}
+	public void moveUpRight() {}
 
 	/*
 	 * (non-Javadoc)
 	 * @see actors.Actor#moveDownLeft()
 	 */
 	@Override
-	public void moveDownLeft() {
-		// TODO Auto-generated method stub
-
-	}
+	public void moveDownLeft() {}
 
 	/*
 	 * (non-Javadoc)
 	 * @see actors.Actor#moveDownRight()
 	 */
 	@Override
-	public void moveDownRight() {
-		// TODO Auto-generated method stub
-
-	}
+	public void moveDownRight() {}
 
 	/*
 	 * (non-Javadoc)
@@ -211,8 +251,22 @@ public class Enemy extends Actor {
 	 */
 	@Override
 	public void firePrimary() {
-		// TODO Auto-generated method stub
+		int spread = 20;
+		if (type == AnimationType.ENEMY4) {
+			spread = -spread;
+		}
 
+		if (canFirePrimary()) {
+			Projectile pShot = new Projectile(primaryWeapon, type, x_pos, y_pos);
+
+			shots.add(pShot);
+
+			primaryVolley--;
+			if (primaryVolley == 0) {
+				setCanFirePrimary(false);
+				primaryVolley = 4;
+			}
+		}
 	}
 
 	/*
@@ -221,8 +275,26 @@ public class Enemy extends Actor {
 	 */
 	@Override
 	public void fireSecondary() {
-		// TODO Auto-generated method stub
+		int spread = 20;
+		if (type == AnimationType.ENEMY4) {
+			spread = -spread;
+		}
 
+		if (canFireSecondary()) {
+			Projectile sShot = new Projectile(secondaryWeapon, type, x_pos, y_pos);
+			Projectile sShot1 = new Projectile(secondaryWeapon, type, x_pos, y_pos + spread);
+			Projectile sShot2 = new Projectile(secondaryWeapon, type, x_pos, y_pos + spread + spread);
+
+			shots.add(sShot);
+			shots.add(sShot1);
+			shots.add(sShot2);
+
+			secondaryVolley--;
+			if (secondaryVolley == 0) {
+				setCanFireSecondary(false);
+				secondaryVolley = 2;
+			}
+		}
 	}
 
 	/*
@@ -233,7 +305,9 @@ public class Enemy extends Actor {
 	public void explode() {
 		setExploding(true);
 
-		animation = new Animation(true);
+		clearCollisions();
+
+		Animation animation = new Animation(true);
 		animation.addFrame(Resources.getInstance().explosion1_1, 250);
 		animation.addFrame(Resources.getInstance().explosion1_2, 250);
 		animation.addFrame(Resources.getInstance().explosion1_3, 250);
@@ -244,14 +318,17 @@ public class Enemy extends Actor {
 		setAnimation(animation);
 	}
 
+	@Override
+	public void removeCollision() {
+
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see actors.Actor#isColliding(actors.Actor)
 	 */
 	@Override
 	public boolean isColliding(Actor actor) {
-		// TODO Auto-generated method stub
 		return false;
 	}
-
 }

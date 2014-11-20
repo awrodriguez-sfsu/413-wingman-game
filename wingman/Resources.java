@@ -17,7 +17,7 @@ public class Resources {
 	private static Resources instance;
 	public Image big_bullet, boss, bottom, bullet, bullet_left, bullet_right, enemy1_1, enemy1_2, enemy1_3, enemy2_1, enemy2_2, enemy2_3, enemy3_1, enemy3_2, enemy3_3, enemy4_1, enemy4_2, enemy4_3, enemy_bullet1, enemy_bullet2, explosion1_1, explosion1_2, explosion1_3, explosion1_4, explosion1_5, explosion1_6, explosion2_1, explosion2_2, explosion2_3, explosion2_4, explosion2_5, explosion2_6, explosion2_7, gameOver, health, health1, health2, health3, island1, island2, island3, life, player1_1, player1_2, player1_3, power_up, score, water, youLose, youWin;
 
-	public ResourceSpec big_bullet_spec, bullet_spec, bullet_left_spec, bullet_right_spec, enemy_bullet1_spec, enemy_bullet2_spec, enemy1_spec, enemy2_spec, enemy3_spec, enemy4_spec, player1_spec, power_up_spec;
+	public static ResourceSpec big_bullet_spec, bullet_spec, bullet_left_spec, bullet_right_spec, enemy_bullet1_spec, enemy_bullet2_spec, enemy1_spec, enemy2_spec, enemy3_spec, enemy4_spec, player1_spec, power_up_spec;
 
 	private Resources() {
 		try {
@@ -98,11 +98,48 @@ public class Resources {
 		return instance;
 	}
 
+	public static ResourceSpec getSpec(String name) {
+
+		if (instance == null) {
+			instance = new Resources();
+		}
+
+		switch (name) {
+			case "big_bullet":
+				return big_bullet_spec;
+			case "bullet":
+				return bullet_spec;
+			case "bullet_left":
+				return bullet_left_spec;
+			case "bullet_right":
+				return bullet_right_spec;
+			case "enemy_bullet1":
+				return enemy_bullet1_spec;
+			case "enemy_bullet2":
+				return enemy_bullet2_spec;
+			case "enemy1":
+				return enemy1_spec;
+			case "enemy2":
+				return enemy2_spec;
+			case "enemy3":
+				return enemy3_spec;
+			case "enemy4":
+				return enemy4_spec;
+			case "player1":
+				return player1_spec;
+			case "power_up":
+				return power_up_spec;
+			default:
+				return null;
+		}
+	}
+
 	public class ResourceSpec {
 
 		// Bounds
-		public double center_x, center_y, top, bottom, left, right;
+		public double center_x, center_y, top, bottom, left, right, front;
 		public long number_of_shapes;
+		public String name;
 
 		private JSONParser parser;
 
@@ -123,6 +160,7 @@ public class Resources {
 				this.bottom = (double) Double.parseDouble(bounds.get("bottom_edge").toString());
 				this.left = (double) Double.parseDouble(bounds.get("left_edge").toString());
 				this.right = (double) Double.parseDouble(bounds.get("right_edge").toString());
+				this.front = (double) Double.parseDouble(bounds.get("front_edge").toString());
 
 				JSONObject collision = (JSONObject) objectSpecifications.get("collision");
 				this.number_of_shapes = (long) Long.parseLong(collision.get("number_of_shapes").toString());
@@ -133,6 +171,8 @@ public class Resources {
 					JSONArray params = (JSONArray) shape.get("params");
 					shapes.add(new Shape((String) shape.get("type"), params));
 				}
+
+				this.name = name;
 			} catch (Exception exception) {
 				exception.printStackTrace();
 			}

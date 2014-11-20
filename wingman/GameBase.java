@@ -18,14 +18,12 @@ import java.util.Set;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 
-import projectiles.PrimaryWeapon;
-import projectiles.SecondaryWeapon;
+import projectiles.Projectile;
 import actors.Enemy;
 import actors.MainActor;
 import animations.Animation;
 import background.Island;
 import enums.AnimationType;
-import enums.EnemyType;
 
 public class GameBase extends JApplet implements Runnable, KeyListener {
 
@@ -132,8 +130,8 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 		animations.put(AnimationType.ISLAND3, island3);
 		animations.put(AnimationType.BULLET, bullet);
 		animations.put(AnimationType.BIG_BULLET, big_bullet);
-		animations.put(AnimationType.ENEMY_WEAPON1, enemyWeapon1);
-		animations.put(AnimationType.ENEMY_WEAPON2, enemyWeapon2);
+		animations.put(AnimationType.ENEMY_BULLET1, enemyWeapon1);
+		animations.put(AnimationType.ENEMY_BULLET2, enemyWeapon2);
 	}
 
 	@Override
@@ -195,12 +193,13 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 	}
 
 	private void drawGame(int width, int height, Graphics2D graphics2d) {
+
 		int maxEnemies = 8;
 		int minEnemies = 3;
 		int maxIslands = 10;
 		int minIslands = 4;
 
-		if (isPlayerAlive) {
+		if (wingman.isAlive()) {
 			drawBackgroundWithTileImage(width, height, graphics2d);
 
 			if (islands.size() < 3) {
@@ -219,8 +218,6 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 
 			wingman.update(width, height);
 			wingman.draw(graphics2d, this);
-			// wingman.drawCollisionRect(graphics2d, this);
-			wingman.drawCircle(graphics2d, this);
 
 			if (enemies.size() < 3) {
 				generateEnemies(generator.nextInt(( maxEnemies - minEnemies ) + 1) + minEnemies);
@@ -230,39 +227,48 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 					if (enemy.isAlive() && enemy.isVisible()) {
 						enemy.update(width, height);
 						enemy.draw(graphics2d, this);
-						enemy.drawCollisionRect(graphics2d, this);
 					} else {
 						enemies.remove(i);
 					}
 				}
 			}
 
-			ArrayList<PrimaryWeapon> mainCharacterPrimaryShots = wingman.getPrimaryWeaponShots();
-			for (int i = 0; i < mainCharacterPrimaryShots.size(); i++) {
-				PrimaryWeapon b = (PrimaryWeapon) mainCharacterPrimaryShots.get(i);
+			ArrayList<Projectile> player1Shots = wingman.getShots();
+			for (int i = 0; i < player1Shots.size(); i++) {
+				Projectile b = (Projectile) player1Shots.get(i);
 				if (b.isVisible()) {
-					b.moveUp();
 					b.update(width, height);
 					b.draw(graphics2d, this);
-				} else {
-					mainCharacterPrimaryShots.remove(i);
-				}
-			}
 
-			ArrayList<SecondaryWeapon> mainCharacterSecondaryShots = wingman.getSecondaryWeaponShots();
-			for (int i = 0; i < mainCharacterSecondaryShots.size(); i++) {
-				SecondaryWeapon s = (SecondaryWeapon) mainCharacterSecondaryShots.get(i);
-				if (s.isVisible()) {
-					s.moveUp();
-					s.update(width, height);
-					s.draw(graphics2d, this);
+					for (int j = 0; j < enemies.size(); j++) {
+						Enemy enemy = (Enemy) enemies.get(j);
+
+						if (b.isColliding(enemy)) {
+							enemy.explode();
+							player1Shots.remove(b);
+						}
+					}
+
 				} else {
-					mainCharacterSecondaryShots.remove(i);
+					player1Shots.remove(i);
 				}
 			}
 
 			for (int i = 0; i < enemies.size(); i++) {
 				Enemy enemy = (Enemy) enemies.get(i);
+
+				ArrayList<Projectile> enemyShots = enemy.getShots();
+				for (int j = 0; j < enemyShots.size(); j++) {
+					Projectile b = (Projectile) enemyShots.get(j);
+					if (b.isVisible()) {
+						b.update(width, height);
+						b.draw(graphics2d, this);
+
+						if (wingman.isColliding(b)) {
+							wingman.explode();
+						}
+					}
+				}
 
 				if (wingman.isColliding(enemy)) {
 					enemy.explode();
@@ -290,29 +296,24 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 	}
 
 	private void generateEnemies(int enemies) {
-		EnemyType enemyType;
 		AnimationType enemyImage;
 		for (int i = 0; i < enemies; i++) {
 			switch (generator.nextInt(4) + 1) {
 				case 2:
-					enemyType = EnemyType.ENEMY2;
 					enemyImage = AnimationType.ENEMY2;
 					break;
 				case 3:
-					enemyType = EnemyType.ENEMY3;
 					enemyImage = AnimationType.ENEMY3;
 					break;
 				case 4:
-					enemyType = EnemyType.ENEMY4;
 					enemyImage = AnimationType.ENEMY4;
 					break;
 				default:
-					enemyType = EnemyType.ENEMY1;
 					enemyImage = AnimationType.ENEMY1;
 					break;
 			}
 
-			Enemy enemy = new Enemy(enemyImage, AnimationType.ENEMY_WEAPON1, AnimationType.ENEMY_WEAPON2, AnimationType.SMALL_EXPLOSION, enemyType, generator, dimension);
+			Enemy enemy = new Enemy(enemyImage, AnimationType.ENEMY_BULLET1, AnimationType.ENEMY_BULLET2, generator, dimension);
 			this.enemies.add(enemy);
 		}
 	}
