@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import shapes.CollisionCircle;
 import shapes.CollisionRectangle;
-import wingman.Resources.ResourceSpec;
+import wingman.Resources.SolidResourceSpecification;
 import animations.Animation;
 import enums.AnimationType;
 import enums.GameObjectType;
@@ -27,11 +27,13 @@ public abstract class GameObject {
 	protected int x_pos;
 	protected int y_pos;
 
+	protected final int HUD = (int) Resources.getInstance().hud_bottom_image_spec.bottom;
+
 	private boolean isSolid;
 
 	private GameObjectType type;
 
-	private ResourceSpec specification;
+	private SolidResourceSpecification specification;
 
 	private ArrayList<CollisionCircle> collisionCircles;
 	private ArrayList<CollisionRectangle> collisionRectangles;
@@ -51,7 +53,7 @@ public abstract class GameObject {
 			collisionCircles = new ArrayList<CollisionCircle>();
 			collisionRectangles = new ArrayList<CollisionRectangle>();
 
-			specification = Resources.getSpec(image.getName());
+			specification = Resources.getSolidSpec(image.getName());
 			for (int i = 0; i < specification.shapes.size(); i++) {
 				if (specification.shapes.get(i).type.equals("rectangle")) {
 					collisionRectangles.add(new CollisionRectangle(specification.shapes.get(i).x, specification.shapes.get(i).y, specification.shapes.get(i).width, specification.shapes.get(i).height));
@@ -70,16 +72,16 @@ public abstract class GameObject {
 
 	public void draw(Graphics graphics, ImageObserver observer) {
 		graphics.drawImage(animation.getImage(), x_pos, y_pos, observer);
-		if (isSolid) {
-			for (int i = 0; i < collisionRectangles.size(); i++) {
-				CollisionRectangle rectangle = (CollisionRectangle) collisionRectangles.get(i);
-				graphics.drawRect((int) rectangle.getX(), (int) rectangle.getY(), (int) rectangle.getWidth(), (int) rectangle.getHeight());
-			}
-			for (int i = 0; i < collisionCircles.size(); i++) {
-				CollisionCircle circle = (CollisionCircle) collisionCircles.get(i);
-				graphics.drawOval((int) circle.getX(), (int) circle.getY(), (int) circle.getWidth(), (int) circle.getHeight());
-			}
-		}
+//		if (isSolid) {
+//			for (int i = 0; i < collisionRectangles.size(); i++) {
+//				CollisionRectangle rectangle = (CollisionRectangle) collisionRectangles.get(i);
+//				graphics.drawRect((int) rectangle.getX(), (int) rectangle.getY(), (int) rectangle.getWidth(), (int) rectangle.getHeight());
+//			}
+//			for (int i = 0; i < collisionCircles.size(); i++) {
+//				CollisionCircle circle = (CollisionCircle) collisionCircles.get(i);
+//				graphics.drawOval((int) circle.getX(), (int) circle.getY(), (int) circle.getWidth(), (int) circle.getHeight());
+//			}
+//		}
 
 		animation.update(16, this);
 	}
@@ -148,4 +150,6 @@ public abstract class GameObject {
 	public abstract void update(int width, int height);
 
 	public abstract boolean isVisible();
+
+	public abstract boolean inPlay();
 }

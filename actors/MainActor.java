@@ -26,6 +26,8 @@ public class MainActor extends Actor {
 
 	private boolean isAlive;
 
+	private int health = 5;
+
 	/**
 	 * @param image
 	 * @param type
@@ -66,8 +68,8 @@ public class MainActor extends Actor {
 			y_pos = (int) ( top_edge + GAME_BORDER );
 		}
 
-		if (y_pos >= height - bottom_edge - GAME_BORDER) {
-			y_pos = (int) ( height - bottom_edge - GAME_BORDER );
+		if (y_pos >= height - bottom_edge - GAME_BORDER - HUD) {
+			y_pos = (int) ( height - bottom_edge - GAME_BORDER - HUD );
 		}
 
 		for (int i = 0; i < getCollisionCircles().size(); i++) {
@@ -205,6 +207,11 @@ public class MainActor extends Actor {
 	}
 
 	@Override
+	public boolean inPlay() {
+		return true;
+	}
+
+	@Override
 	public boolean isAlive() {
 		return isAlive;
 	}
@@ -212,6 +219,20 @@ public class MainActor extends Actor {
 	@Override
 	public void setAlive(boolean isAlive) {
 		this.isAlive = isAlive;
+	}
+
+	/**
+	 * @return the health
+	 */
+	public int getHealth() {
+		return health;
+	}
+
+	/**
+	 * @param health the health to set
+	 */
+	public void setHealth(int health) {
+		this.health = health;
 	}
 
 	@Override
@@ -252,10 +273,5 @@ public class MainActor extends Actor {
 		}
 
 		return false;
-	}
-
-	@Override
-	public void removeCollision() {
-
 	}
 }

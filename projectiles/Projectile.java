@@ -32,11 +32,11 @@ public class Projectile extends Actor {
 	}
 
 	private static int getX(int x_pos, AnimationType shooter, AnimationType type) {
-		return (int) ( Resources.getSpec(shooter.getName()).center_x + x_pos - Resources.getSpec(type.getName()).center_x );
+		return (int) ( Resources.getSolidSpec(shooter.getName()).center_x + x_pos - Resources.getSolidSpec(type.getName()).center_x );
 	}
 
 	private static int getY(int y_pos, AnimationType shooter) {
-		return (int) ( Resources.getSpec(shooter.getName()).front + y_pos );
+		return (int) ( Resources.getSolidSpec(shooter.getName()).front + y_pos );
 	}
 
 	@Override
@@ -71,6 +71,11 @@ public class Projectile extends Actor {
 
 	public boolean isVisible() {
 		return y_pos > -5 || y_pos < 800;
+	}
+
+	@Override
+	public boolean inPlay() {
+		return isVisible();
 	}
 
 	public boolean isColliding(Actor actor) {
@@ -144,7 +149,4 @@ public class Projectile extends Actor {
 
 	@Override
 	public void setAlive(boolean isAlive) {}
-
-	@Override
-	public void removeCollision() {}
 }

@@ -32,9 +32,7 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 	private final int WIDTH = 800;
 	private final int HEIGHT = 800;
 
-	private int backgroundMovement = 1;
-
-	public static boolean isPlayerAlive = true;
+	private int backgroundMovement = 0;
 
 	private static Dimension dimension;
 
@@ -50,7 +48,9 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 
 	private Animation bullet, big_bullet, enemyWeapon1, enemyWeapon2;
 
-	private MainActor wingman;
+	private MainActor player1;
+
+	private MainActor player2;
 
 	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 	private ArrayList<Island> islands = new ArrayList<Island>();
@@ -66,7 +66,9 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 
 		setupImages();
 
-		wingman = new MainActor(AnimationType.PLAYER1, AnimationType.BULLET, AnimationType.BIG_BULLET, WIDTH / 2, HEIGHT - 128);
+		player1 = new MainActor(AnimationType.PLAYER1, AnimationType.BULLET, AnimationType.BIG_BULLET, WIDTH / 2, HEIGHT - 128);
+
+		player2 = new MainActor(AnimationType.PLAYER1, AnimationType.BULLET, AnimationType.BIG_BULLET, WIDTH / 3, HEIGHT - 128);
 	}
 
 	private void setupImages() {
@@ -156,7 +158,7 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 	@Override
 	public void run() {
 
-		while (isPlayerAlive) {
+		while (true) {
 			repaint();
 
 			try {
@@ -170,6 +172,16 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 	@Override
 	public void paint(Graphics graphics) {
 		dimension = getSize();
+		if (dimension.width < 800) {
+			setSize(new Dimension(800, dimension.height));
+			dimension = getSize();
+		}
+
+		if (dimension.height < 800) {
+			setSize(new Dimension(dimension.width, 800));
+			dimension = getSize();
+		}
+
 		Graphics2D graphics2d = createGraphics2D(dimension.width, dimension.height);
 		drawGame(dimension.width, dimension.height, graphics2d);
 		graphics2d.dispose();
@@ -199,7 +211,7 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 		int maxIslands = 10;
 		int minIslands = 4;
 
-		if (wingman.isAlive()) {
+		if (player1.isAlive() || player2.isAlive()) {
 			drawBackgroundWithTileImage(width, height, graphics2d);
 
 			if (islands.size() < 3) {
@@ -216,15 +228,18 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 				}
 			}
 
-			wingman.update(width, height);
-			wingman.draw(graphics2d, this);
+			player1.update(width, height);
+			player1.draw(graphics2d, this);
+
+			player2.update(width, height);
+			player2.draw(graphics2d, this);
 
 			if (enemies.size() < 3) {
 				generateEnemies(generator.nextInt(( maxEnemies - minEnemies ) + 1) + minEnemies);
 			} else {
 				for (int i = 0; i < enemies.size(); i++) {
 					Enemy enemy = (Enemy) enemies.get(i);
-					if (enemy.isAlive() && enemy.isVisible()) {
+					if (enemy.isAlive() && enemy.inPlay()) {
 						enemy.update(width, height);
 						enemy.draw(graphics2d, this);
 					} else {
@@ -233,7 +248,7 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 				}
 			}
 
-			ArrayList<Projectile> player1Shots = wingman.getShots();
+			ArrayList<Projectile> player1Shots = player1.getShots();
 			for (int i = 0; i < player1Shots.size(); i++) {
 				Projectile b = (Projectile) player1Shots.get(i);
 				if (b.isVisible()) {
@@ -254,6 +269,27 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 				}
 			}
 
+			ArrayList<Projectile> player2Shots = player2.getShots();
+			for (int i = 0; i < player2Shots.size(); i++) {
+				Projectile b = (Projectile) player2Shots.get(i);
+				if (b.isVisible()) {
+					b.update(width, height);
+					b.draw(graphics2d, this);
+
+					for (int j = 0; j < enemies.size(); j++) {
+						Enemy enemy = (Enemy) enemies.get(j);
+
+						if (b.isColliding(enemy)) {
+							enemy.explode();
+							player2Shots.remove(b);
+						}
+					}
+
+				} else {
+					player2Shots.remove(i);
+				}
+			}
+
 			for (int i = 0; i < enemies.size(); i++) {
 				Enemy enemy = (Enemy) enemies.get(i);
 
@@ -264,18 +300,47 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 						b.update(width, height);
 						b.draw(graphics2d, this);
 
-						if (wingman.isColliding(b)) {
-							wingman.explode();
+						if (player1.isColliding(b)) {
+							enemyShots.remove(j);
+							if (player1.getHealth() == 1) {
+								player1.explode();
+							} else {
+								player1.setHealth(player1.getHealth() - 1);
+							}
+						}
+
+						if (player2.isColliding(b)) {
+							enemyShots.remove(j);
+							if (player2.getHealth() == 1) {
+								player2.explode();
+							} else {
+								player2.setHealth(player2.getHealth() - 1);
+							}
 						}
 					}
 				}
 
-				if (wingman.isColliding(enemy)) {
+				if (player1.isColliding(enemy)) {
 					enemy.explode();
+					if (player1.getHealth() == 1) {
+						player1.explode();
+					} else {
+						player1.setHealth(player1.getHealth() - 1);
+					}
+				}
+
+				if (player2.isColliding(enemy)) {
+					enemy.explode();
+					if (player2.getHealth() == 1) {
+						player2.explode();
+					} else {
+						player2.setHealth(player2.getHealth() - 1);
+					}
 				}
 			}
+			drawHUD(width, height, graphics2d);
 		} else {
-			System.out.println("End Game");
+			graphics2d.drawImage(Resources.getInstance().game_over, (int) ( ( width / 2 ) - Resources.getInstance().game_over_image_spec.center_x ), (int) ( ( height / 2 ) - Resources.getInstance().game_over_image_spec.center_y ), this);
 		}
 	}
 
@@ -284,15 +349,33 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 		int tileHeight = background.getImage().getHeight(this);
 
 		int amountX = (int) ( width / tileWidth );
-		int amountY = (int) ( height / tileWidth );
+		int amountY = (int) ( ( height - Resources.getInstance().hud_bottom_image_spec.bottom ) / tileHeight );
 
-		for (int i = -1; i <= amountY; i++) {
-			for (int j = 0; j <= amountX; j++) {
-				graphics2d.drawImage(background.getImage(), j * tileWidth, i * tileHeight + ( backgroundMovement % tileHeight ), tileWidth, tileHeight, this);
+		for (int i = 0; i <= amountX; i++) {
+			for (int j = -1; j <= amountY; j++) {
+				graphics2d.drawImage(background.getImage(), i * tileWidth, j * tileHeight + ( backgroundMovement % tileHeight ), tileWidth, tileHeight, this);
 			}
 		}
 
 		backgroundMovement += 1;
+	}
+
+	private void drawHUD(int width, int height, Graphics2D graphics2d) {
+		int tileWidth = (int) Resources.getInstance().hud_tile_image_spec.right;
+		int tileHeight = (int) Resources.getInstance().hud_tile_image_spec.bottom;
+
+		int amountX = (int) ( width / tileWidth );
+		int amountY = (int) ( ( Resources.getInstance().hud_bottom_image_spec.bottom ) / tileHeight );
+
+		for (int i = 0; i <= amountX; i++) {
+			for (int j = 0; j <= amountY; j++) {
+				graphics2d.drawImage(Resources.getInstance().hud_tile, i * tileWidth, ( j + height - 76 ), tileWidth, tileHeight, this);
+				graphics2d.drawImage(Resources.getInstance().hud_tile, i * tileWidth, ( 32 * j + height - 76 ), tileWidth, tileHeight, this);
+				graphics2d.drawImage(Resources.getInstance().hud_tile, i * tileWidth, ( 64 * j + height - 76 ), tileWidth, tileHeight, this);
+			}
+		}
+
+		graphics2d.drawImage(Resources.getInstance().hud_bottom, (int) ( ( width / 2 ) - Resources.getInstance().hud_bottom_image_spec.center_x ), (int) ( ( height ) - Resources.getInstance().hud_bottom_image_spec.bottom ), this);
 	}
 
 	private void generateEnemies(int enemies) {
@@ -345,109 +428,214 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 	/**
 	 * KeyListener
 	 */
-	Set<Integer> keysPressed = new HashSet<>();
+	Set<Integer> keysPressedP1 = new HashSet<>();
+	Set<Integer> keysPressedP2 = new HashSet<>();
 
 	@Override
 	public void keyPressed(KeyEvent event) {
 		switch (event.getKeyCode()) {
+		// Player1 controls
 			case KeyEvent.VK_UP:
-				if (!keysPressed.contains(event.getKeyCode())) {
-					keysPressed.add(event.getKeyCode());
+				if (!keysPressedP1.contains(event.getKeyCode())) {
+					keysPressedP1.add(event.getKeyCode());
 				}
 
-				if (keysPressed.contains(KeyEvent.VK_LEFT)) {
-					wingman.moveUpLeft();
-				} else if (keysPressed.contains(KeyEvent.VK_RIGHT)) {
-					wingman.moveUpRight();
+				if (keysPressedP1.contains(KeyEvent.VK_LEFT)) {
+					player1.moveUpLeft();
+				} else if (keysPressedP1.contains(KeyEvent.VK_RIGHT)) {
+					player1.moveUpRight();
 				} else {
-					wingman.moveUp();
+					player1.moveUp();
 				}
 
-				if (keysPressed.contains(KeyEvent.VK_SPACE)) {
-					wingman.firePrimary();
+				if (keysPressedP1.contains(KeyEvent.VK_SLASH)) {
+					player1.firePrimary();
 				}
 
 				break;
 
 			case KeyEvent.VK_DOWN:
-				if (!keysPressed.contains(event.getKeyCode())) {
-					keysPressed.add(event.getKeyCode());
+				if (!keysPressedP1.contains(event.getKeyCode())) {
+					keysPressedP1.add(event.getKeyCode());
 				}
 
-				if (keysPressed.contains(KeyEvent.VK_LEFT)) {
-					wingman.moveDownLeft();
-				} else if (keysPressed.contains(KeyEvent.VK_RIGHT)) {
-					wingman.moveDownRight();
+				if (keysPressedP1.contains(KeyEvent.VK_LEFT)) {
+					player1.moveDownLeft();
+				} else if (keysPressedP1.contains(KeyEvent.VK_RIGHT)) {
+					player1.moveDownRight();
 				} else {
-					wingman.moveDown();
+					player1.moveDown();
 				}
 
-				if (keysPressed.contains(KeyEvent.VK_SPACE)) {
-					wingman.firePrimary();
+				if (keysPressedP1.contains(KeyEvent.VK_SLASH)) {
+					player1.firePrimary();
 				}
 
 				break;
 
 			case KeyEvent.VK_LEFT:
-				if (!keysPressed.contains(event.getKeyCode())) {
-					keysPressed.add(event.getKeyCode());
+				if (!keysPressedP1.contains(event.getKeyCode())) {
+					keysPressedP1.add(event.getKeyCode());
 				}
 
-				if (keysPressed.contains(KeyEvent.VK_UP)) {
-					wingman.moveUpLeft();
-				} else if (keysPressed.contains(KeyEvent.VK_DOWN)) {
-					wingman.moveDownLeft();
+				if (keysPressedP1.contains(KeyEvent.VK_UP)) {
+					player1.moveUpLeft();
+				} else if (keysPressedP1.contains(KeyEvent.VK_DOWN)) {
+					player1.moveDownLeft();
 				} else {
-					wingman.moveLeft();
+					player1.moveLeft();
 				}
 
-				if (keysPressed.contains(KeyEvent.VK_SPACE)) {
-					wingman.firePrimary();
+				if (keysPressedP1.contains(KeyEvent.VK_SLASH)) {
+					player1.firePrimary();
 				}
 
 				break;
 
 			case KeyEvent.VK_RIGHT:
-				if (!keysPressed.contains(event.getKeyCode())) {
-					keysPressed.add(event.getKeyCode());
+				if (!keysPressedP1.contains(event.getKeyCode())) {
+					keysPressedP1.add(event.getKeyCode());
 				}
 
-				if (keysPressed.contains(KeyEvent.VK_UP)) {
-					wingman.moveUpRight();
-				} else if (keysPressed.contains(KeyEvent.VK_DOWN)) {
-					wingman.moveDownRight();
+				if (keysPressedP1.contains(KeyEvent.VK_UP)) {
+					player1.moveUpRight();
+				} else if (keysPressedP1.contains(KeyEvent.VK_DOWN)) {
+					player1.moveDownRight();
 				} else {
-					wingman.moveRight();
+					player1.moveRight();
 				}
 
-				if (keysPressed.contains(KeyEvent.VK_SPACE)) {
-					wingman.firePrimary();
+				if (keysPressedP1.contains(KeyEvent.VK_SLASH)) {
+					player1.firePrimary();
 				}
 
 				break;
 
-			case KeyEvent.VK_SPACE:
-				if (!keysPressed.contains(event.getKeyCode())) {
-					keysPressed.add(event.getKeyCode());
+			case KeyEvent.VK_PERIOD:
+				if (!keysPressedP1.contains(event.getKeyCode())) {
+					keysPressedP1.add(event.getKeyCode());
 				}
 
-				if (wingman.canFirePrimary()) {
-					wingman.firePrimary();
+				if (player1.canFirePrimary()) {
+					player1.firePrimary();
 				}
+
 				break;
 
-			case KeyEvent.VK_B:
-				if (!keysPressed.contains(event.getKeyCode())) {
-					keysPressed.add(event.getKeyCode());
+			case KeyEvent.VK_SLASH:
+				if (!keysPressedP1.contains(event.getKeyCode())) {
+					keysPressedP1.add(event.getKeyCode());
 				}
 
-				if (wingman.canFireSecondary()) {
-					wingman.fireSecondary();
+				if (player1.canFireSecondary()) {
+					player1.fireSecondary();
 				}
+
+				break;
+
+			// Player2 controls
+			case KeyEvent.VK_W:
+				if (!keysPressedP2.contains(event.getKeyCode())) {
+					keysPressedP2.add(event.getKeyCode());
+				}
+
+				if (keysPressedP2.contains(KeyEvent.VK_A)) {
+					player2.moveUpLeft();
+				} else if (keysPressedP2.contains(KeyEvent.VK_D)) {
+					player2.moveUpRight();
+				} else {
+					player2.moveUp();
+				}
+
+				if (keysPressedP2.contains(KeyEvent.VK_G)) {
+					player2.firePrimary();
+				}
+
+				break;
+
+			case KeyEvent.VK_S:
+				if (!keysPressedP2.contains(event.getKeyCode())) {
+					keysPressedP2.add(event.getKeyCode());
+				}
+
+				if (keysPressedP2.contains(KeyEvent.VK_A)) {
+					player2.moveDownLeft();
+				} else if (keysPressedP2.contains(KeyEvent.VK_D)) {
+					player2.moveDownRight();
+				} else {
+					player2.moveDown();
+				}
+
+				if (keysPressedP2.contains(KeyEvent.VK_G)) {
+					player2.firePrimary();
+				}
+
+				break;
+
+			case KeyEvent.VK_A:
+				if (!keysPressedP2.contains(event.getKeyCode())) {
+					keysPressedP2.add(event.getKeyCode());
+				}
+
+				if (keysPressedP2.contains(KeyEvent.VK_W)) {
+					player2.moveUpLeft();
+				} else if (keysPressedP2.contains(KeyEvent.VK_S)) {
+					player2.moveDownLeft();
+				} else {
+					player2.moveLeft();
+				}
+
+				if (keysPressedP2.contains(KeyEvent.VK_G)) {
+					player2.firePrimary();
+				}
+
+				break;
+
+			case KeyEvent.VK_D:
+				if (!keysPressedP2.contains(event.getKeyCode())) {
+					keysPressedP2.add(event.getKeyCode());
+				}
+
+				if (keysPressedP2.contains(KeyEvent.VK_W)) {
+					player2.moveUpRight();
+				} else if (keysPressedP2.contains(KeyEvent.VK_S)) {
+					player2.moveDownRight();
+				} else {
+					player2.moveRight();
+				}
+
+				if (keysPressedP2.contains(KeyEvent.VK_G)) {
+					player2.firePrimary();
+				}
+
+				break;
+
+			case KeyEvent.VK_G:
+				if (!keysPressedP2.contains(event.getKeyCode())) {
+					keysPressedP2.add(event.getKeyCode());
+				}
+
+				if (player2.canFirePrimary()) {
+					player2.firePrimary();
+				}
+
+				break;
+
+			case KeyEvent.VK_H:
+				if (!keysPressedP2.contains(event.getKeyCode())) {
+					keysPressedP2.add(event.getKeyCode());
+				}
+
+				if (player2.canFireSecondary()) {
+					player2.fireSecondary();
+				}
+
 				break;
 
 			case KeyEvent.VK_Q:
-				wingman.explode();
+				player1.explode();
+				player2.explode();
+				break;
 		}
 	}
 
@@ -455,35 +643,67 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 	public void keyReleased(KeyEvent event) {
 
 		switch (event.getKeyCode()) {
+		// Player1 controls
 			case KeyEvent.VK_UP:
-				keysPressed.remove(event.getKeyCode());
+				keysPressedP1.remove(event.getKeyCode());
 				break;
 			case KeyEvent.VK_DOWN:
-				keysPressed.remove(event.getKeyCode());
+				keysPressedP1.remove(event.getKeyCode());
 				break;
 			case KeyEvent.VK_LEFT:
-				keysPressed.remove(event.getKeyCode());
+				keysPressedP1.remove(event.getKeyCode());
 				break;
 			case KeyEvent.VK_RIGHT:
-				keysPressed.remove(event.getKeyCode());
+				keysPressedP1.remove(event.getKeyCode());
 				break;
-			case KeyEvent.VK_SPACE:
-				keysPressed.remove(event.getKeyCode());
-				wingman.setCanFirePrimary(true);
+			case KeyEvent.VK_PERIOD:
+				keysPressedP1.remove(event.getKeyCode());
+				player1.setCanFirePrimary(true);
 				break;
-			case KeyEvent.VK_B:
-				keysPressed.remove(event.getKeyCode());
-				wingman.setCanFireSecondary(true);
+			case KeyEvent.VK_SLASH:
+				keysPressedP1.remove(event.getKeyCode());
+				player1.setCanFireSecondary(true);
+				break;
+
+			// Player 2 controls
+			case KeyEvent.VK_W:
+				keysPressedP2.remove(event.getKeyCode());
+				break;
+			case KeyEvent.VK_S:
+				keysPressedP2.remove(event.getKeyCode());
+				break;
+			case KeyEvent.VK_A:
+				keysPressedP2.remove(event.getKeyCode());
+				break;
+			case KeyEvent.VK_D:
+				keysPressedP2.remove(event.getKeyCode());
+				break;
+			case KeyEvent.VK_G:
+				keysPressedP2.remove(event.getKeyCode());
+				player2.setCanFirePrimary(true);
+				break;
+			case KeyEvent.VK_H:
+				keysPressedP2.remove(event.getKeyCode());
+				player2.setCanFireSecondary(true);
 				break;
 		}
 
-		if (keysPressed.isEmpty()) {
-			wingman.stop();
-		} else if (keysPressed.size() == 1) {
-			if (keysPressed.contains(KeyEvent.VK_SPACE)) {
-				wingman.stop();
+		if (keysPressedP1.isEmpty()) {
+			player1.stop();
+		} else if (keysPressedP1.size() == 1) {
+			if (keysPressedP1.contains(KeyEvent.VK_PERIOD)) {
+				player1.stop();
 			}
 		}
+
+		if (keysPressedP2.isEmpty()) {
+			player2.stop();
+		} else if (keysPressedP2.size() == 1) {
+			if (keysPressedP2.contains(KeyEvent.VK_G)) {
+				player2.stop();
+			}
+		}
+
 	}
 
 	@Override

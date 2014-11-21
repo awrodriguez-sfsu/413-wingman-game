@@ -3,6 +3,7 @@
  */
 package actors;
 
+import java.applet.AudioClip;
 import java.awt.Dimension;
 import java.util.Random;
 
@@ -65,9 +66,18 @@ public class Enemy extends Actor {
 	@Override
 	public boolean isVisible() {
 		if (type == AnimationType.ENEMY4) {
-			return !( y_pos < -bottom_edge );
+			return ( y_pos < -bottom_edge && y_pos > dimension.height - HUD );
 		} else {
-			return !( y_pos > dimension.height );
+			return ( y_pos > dimension.height - HUD + bottom_edge );
+		}
+	}
+
+	@Override
+	public boolean inPlay() {
+		if (type == AnimationType.ENEMY4) {
+			return ( y_pos > -bottom_edge );
+		} else {
+			return ( y_pos < dimension.height - HUD );
 		}
 	}
 
@@ -169,6 +179,10 @@ public class Enemy extends Actor {
 		}
 
 		actionTime += 16;
+
+		if (( y_pos < 0 || y_pos > 800 ) && isVisible()) {
+			System.out.println(type.getName() + " x_pos: " + x_pos + " y_pos: " + y_pos + " visible: " + isVisible());
+		}
 	}
 
 	@Override
@@ -251,11 +265,6 @@ public class Enemy extends Actor {
 	 */
 	@Override
 	public void firePrimary() {
-		int spread = 20;
-		if (type == AnimationType.ENEMY4) {
-			spread = -spread;
-		}
-
 		if (canFirePrimary()) {
 			Projectile pShot = new Projectile(primaryWeapon, type, x_pos, y_pos);
 
@@ -305,6 +314,9 @@ public class Enemy extends Actor {
 	public void explode() {
 		setExploding(true);
 
+		AudioClip clip = Resources.getInstance().small_explosion_sound;
+		clip.play();
+
 		clearCollisions();
 
 		Animation animation = new Animation(true);
@@ -316,11 +328,6 @@ public class Enemy extends Actor {
 		animation.addFrame(Resources.getInstance().explosion1_6, 250);
 
 		setAnimation(animation);
-	}
-
-	@Override
-	public void removeCollision() {
-
 	}
 
 	/*

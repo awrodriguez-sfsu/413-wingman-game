@@ -20,8 +20,8 @@ public abstract class Actor extends GameObject {
 	private boolean isMovingDown;
 	private boolean isMovingLeft;
 	private boolean isMovingRight;
-	private boolean canFirePrimary;
-	private boolean canFireSecondary;
+	private boolean canFirePrimary = true;
+	private boolean canFireSecondary = true;
 	private boolean isExploding;
 
 	protected double x_speed;
@@ -174,6 +174,4 @@ public abstract class Actor extends GameObject {
 	public abstract void setAlive(boolean isAlive);
 
 	public abstract boolean isColliding(Actor actor);
-
-	public abstract void removeCollision();
 }

@@ -8,6 +8,7 @@ import java.util.Random;
 
 import enums.AnimationType;
 import enums.GameObjectType;
+import wingman.GameBase;
 import wingman.GameObject;
 
 /**
@@ -37,6 +38,7 @@ public class Island extends GameObject {
 	 */
 	@Override
 	public void update(int width, int height) {
+		dimension = GameBase.getDimension();
 		y_pos += MOVEMENT_SPEED;
 	}
 
@@ -47,6 +49,11 @@ public class Island extends GameObject {
 	@Override
 	public boolean isVisible() {
 		return !( x_pos > dimension.width - 32 || x_pos < 0 || y_pos > dimension.height );
+	}
+
+	@Override
+	public boolean inPlay() {
+		return true;
 	}
 
 }
