@@ -22,8 +22,6 @@ public class Enemy extends Actor {
 
 	private final float MOVEMENT_SPEED;
 
-	private boolean isAlive;
-
 	private int actionTime = 0;
 
 	private int primaryVolley = 4;
@@ -60,7 +58,6 @@ public class Enemy extends Actor {
 
 		this.primaryWeapon = primaryWeapon;
 		this.secondaryWeapon = secondaryWeapon;
-		this.isAlive = true;
 	}
 
 	@Override
@@ -79,16 +76,6 @@ public class Enemy extends Actor {
 		} else {
 			return ( y_pos < dimension.height - HUD );
 		}
-	}
-
-	@Override
-	public boolean isAlive() {
-		return isAlive;
-	}
-
-	@Override
-	public void setAlive(boolean isAlive) {
-		this.isAlive = isAlive;
 	}
 
 	@Override
@@ -304,6 +291,10 @@ public class Enemy extends Actor {
 				secondaryVolley = 2;
 			}
 		}
+	}
+
+	public void checkDrop() {
+		System.out.println("drop something??");
 	}
 
 	/*

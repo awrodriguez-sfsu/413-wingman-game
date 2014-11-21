@@ -18,9 +18,9 @@ import org.json.simple.parser.JSONParser;
 public class Resources {
 
 	private static Resources instance;
-	public Image big_bullet, bullet, bullet_left, bullet_right, enemy1_1, enemy1_2, enemy1_3, enemy2_1, enemy2_2, enemy2_3, enemy3_1, enemy3_2, enemy3_3, enemy4_1, enemy4_2, enemy4_3, enemy_bullet1, enemy_bullet2, explosion1_1, explosion1_2, explosion1_3, explosion1_4, explosion1_5, explosion1_6, explosion2_1, explosion2_2, explosion2_3, explosion2_4, explosion2_5, explosion2_6, explosion2_7, game_over, health, health1, health2, health3, hud_bottom, hud_tile, island1, island2, island3, life, player1_1, player1_2, player1_3, power_up, water;
+	public Image big_bullet, bullet, bullet_left, bullet_right, enemy1_1, enemy1_2, enemy1_3, enemy2_1, enemy2_2, enemy2_3, enemy3_1, enemy3_2, enemy3_3, enemy4_1, enemy4_2, enemy4_3, enemy_bullet1, enemy_bullet2, explosion1_1, explosion1_2, explosion1_3, explosion1_4, explosion1_5, explosion1_6, explosion2_1, explosion2_2, explosion2_3, explosion2_4, explosion2_5, explosion2_6, explosion2_7, game_over, health1, health1_2, health1_3, health1_4, health1_5, health2_2, health2_3, health2_4, health2_5, health6, hud_bottom, hud_tile, island1, island2, island3, life, player1_1, player1_2, player1_3, power_up, water;
 
-	public ImageSpecification game_over_image_spec, health_image_spec, hud_bottom_image_spec, life_image_spec, hud_tile_image_spec;
+	public ImageSpecification game_over_image_spec, hud_health_image_spec, hud_health_position1_image_spec, hud_health_position2_image_spec, hud_bottom_image_spec, life_image_spec, hud_tile_image_spec;
 
 	public static SolidResourceSpecification big_bullet_spec, bullet_spec, bullet_left_spec, bullet_right_spec, enemy_bullet1_spec, enemy_bullet2_spec, enemy1_spec, enemy2_spec, enemy3_spec, enemy4_spec, player1_spec, power_up_spec;
 
@@ -60,10 +60,16 @@ public class Resources {
 			explosion2_6 = ImageIO.read(new File("../resources/explosion2_6.png"));
 			explosion2_7 = ImageIO.read(new File("../resources/explosion2_7.png"));
 			game_over = ImageIO.read(new File("../resources/game_over.png"));
-			health = ImageIO.read(new File("../resources/health.png"));
 			health1 = ImageIO.read(new File("../resources/health1.png"));
-			health2 = ImageIO.read(new File("../resources/health2.png"));
-			health3 = ImageIO.read(new File("../resources/health3.png"));
+			health1_2 = ImageIO.read(new File("../resources/health1_2.png"));
+			health1_3 = ImageIO.read(new File("../resources/health1_3.png"));
+			health1_4 = ImageIO.read(new File("../resources/health1_4.png"));
+			health1_5 = ImageIO.read(new File("../resources/health1_5.png"));
+			health2_2 = ImageIO.read(new File("../resources/health2_2.png"));
+			health2_3 = ImageIO.read(new File("../resources/health2_3.png"));
+			health2_4 = ImageIO.read(new File("../resources/health2_4.png"));
+			health2_5 = ImageIO.read(new File("../resources/health2_5.png"));
+			health6 = ImageIO.read(new File("../resources/health6.png"));
 			hud_bottom = ImageIO.read(new File("../resources/hud_bottom.png"));
 			hud_tile = ImageIO.read(new File("../resources/hud_tile.png"));
 			island1 = ImageIO.read(new File("../resources/island1.png"));
@@ -103,7 +109,9 @@ public class Resources {
 		power_up_spec = new SolidResourceSpecification("power_up");
 
 		game_over_image_spec = new ImageSpecification("game_over");
-		health_image_spec = new ImageSpecification("health");
+		hud_health_image_spec = new ImageSpecification("hud_health");
+		hud_health_position1_image_spec = new ImageSpecification("hud_health_position1");
+		hud_health_position2_image_spec = new ImageSpecification("hud_health_position2");
 		hud_bottom_image_spec = new ImageSpecification("hud_bottom");
 		life_image_spec = new ImageSpecification("life");
 		hud_tile_image_spec = new ImageSpecification("hud_tile");

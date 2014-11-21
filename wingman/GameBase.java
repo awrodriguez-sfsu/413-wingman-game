@@ -2,6 +2,7 @@ package wingman;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -261,6 +262,7 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 						if (b.isColliding(enemy)) {
 							enemy.explode();
 							player1Shots.remove(b);
+							player1.increaseScore(10);
 						}
 					}
 
@@ -282,6 +284,7 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 						if (b.isColliding(enemy)) {
 							enemy.explode();
 							player2Shots.remove(b);
+							player2.increaseScore(10);
 						}
 					}
 
@@ -302,42 +305,35 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 
 						if (player1.isColliding(b)) {
 							enemyShots.remove(j);
-							if (player1.getHealth() == 1) {
-								player1.explode();
-							} else {
-								player1.setHealth(player1.getHealth() - 1);
-							}
+							player1.increaseHealth(-1);
 						}
 
 						if (player2.isColliding(b)) {
 							enemyShots.remove(j);
-							if (player2.getHealth() == 1) {
-								player2.explode();
-							} else {
-								player2.setHealth(player2.getHealth() - 1);
-							}
+							player2.increaseHealth(-1);
 						}
 					}
 				}
 
 				if (player1.isColliding(enemy)) {
 					enemy.explode();
-					if (player1.getHealth() == 1) {
-						player1.explode();
-					} else {
-						player1.setHealth(player1.getHealth() - 1);
-					}
+					player1.increaseHealth(-1);
 				}
 
 				if (player2.isColliding(enemy)) {
 					enemy.explode();
-					if (player2.getHealth() == 1) {
-						player2.explode();
-					} else {
-						player2.setHealth(player2.getHealth() - 1);
-					}
+					player2.increaseHealth(-1);
 				}
 			}
+
+			if (player1.getHealth() == 0 && !player1.isExploding()) {
+				player1.explode();
+			}
+
+			if (player2.getHealth() == 0 && !player2.isExploding()) {
+				player2.explode();
+			}
+
 			drawHUD(width, height, graphics2d);
 		} else {
 			graphics2d.drawImage(Resources.getInstance().game_over, (int) ( ( width / 2 ) - Resources.getInstance().game_over_image_spec.center_x ), (int) ( ( height / 2 ) - Resources.getInstance().game_over_image_spec.center_y ), this);
@@ -361,6 +357,14 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 	}
 
 	private void drawHUD(int width, int height, Graphics2D graphics2d) {
+		int center_x = (int) Resources.getInstance().hud_bottom_image_spec.center_x;
+		int bottom = (int) Resources.getInstance().hud_bottom_image_spec.bottom;
+
+		int healtLeftX = (int) Resources.getInstance().hud_health_position1_image_spec.left;
+		int healtLeftY = (int) Resources.getInstance().hud_health_position1_image_spec.top;
+		int healtRightX = (int) Resources.getInstance().hud_health_position2_image_spec.left;
+		int healtRightY = (int) Resources.getInstance().hud_health_position2_image_spec.top;
+
 		int tileWidth = (int) Resources.getInstance().hud_tile_image_spec.right;
 		int tileHeight = (int) Resources.getInstance().hud_tile_image_spec.bottom;
 
@@ -375,7 +379,19 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 			}
 		}
 
-		graphics2d.drawImage(Resources.getInstance().hud_bottom, (int) ( ( width / 2 ) - Resources.getInstance().hud_bottom_image_spec.center_x ), (int) ( ( height ) - Resources.getInstance().hud_bottom_image_spec.bottom ), this);
+		// Hud
+		graphics2d.drawImage(Resources.getInstance().hud_bottom, ( width / 2 ) - center_x, height - bottom, this);
+
+		// Health bars
+		graphics2d.drawImage(player2.getHealthBar(), ( ( width / 2 ) - center_x ) + healtLeftX, ( height - bottom ) + healtLeftY, this);
+		graphics2d.drawImage(player1.getHealthBar(), ( ( width / 2 ) - center_x ) + healtRightX, ( height - bottom ) + healtRightY, this);
+
+		// Score
+		graphics2d.setColor(Color.WHITE);
+		graphics2d.setFont(new Font("TimesRoman", Font.BOLD, 24));
+		graphics2d.drawString(player1.getScore(), 0, 750);
+		graphics2d.drawString(player2.getScore(), 0, 775);
+
 	}
 
 	private void generateEnemies(int enemies) {

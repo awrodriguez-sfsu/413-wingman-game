@@ -3,13 +3,15 @@
  */
 package actors;
 
+import java.applet.AudioClip;
+import java.awt.Image;
 import java.util.ArrayList;
 
-import animations.Animation;
 import projectiles.Projectile;
 import shapes.CollisionCircle;
 import shapes.CollisionRectangle;
 import wingman.Resources;
+import animations.Animation;
 import enums.AnimationType;
 import enums.GameObjectType;
 
@@ -24,9 +26,13 @@ public class MainActor extends Actor {
 
 	private final double MOVEMENT_SPEED = 3.5;
 
-	private boolean isAlive;
+	private int health;
 
-	private int health = 5;
+	private Image healthBar;
+
+	private int lives;
+
+	private long score;
 
 	/**
 	 * @param image
@@ -35,10 +41,13 @@ public class MainActor extends Actor {
 	 * @param y_pos
 	 */
 	public MainActor(AnimationType image, AnimationType primaryWeapon, AnimationType secondaryWeapon, int x_pos, int y_pos) {
-		super(image, GameObjectType.PLAYER1, x_pos, y_pos);
+		super(image, GameObjectType.PLAYER, x_pos, y_pos);
 		this.primaryWeapon = primaryWeapon;
 		this.secondaryWeapon = secondaryWeapon;
-		this.isAlive = true;
+		this.lives = 2;
+		this.health = 5;
+		this.healthBar = Resources.getInstance().health1;
+		this.score = 0;
 	}
 
 	/*
@@ -187,6 +196,9 @@ public class MainActor extends Actor {
 	public void explode() {
 		setExploding(true);
 
+		AudioClip clip = Resources.getInstance().large_explosion_sound;
+		clip.play();
+
 		clearCollisions();
 
 		Animation animation = new Animation(true);
@@ -211,16 +223,6 @@ public class MainActor extends Actor {
 		return true;
 	}
 
-	@Override
-	public boolean isAlive() {
-		return isAlive;
-	}
-
-	@Override
-	public void setAlive(boolean isAlive) {
-		this.isAlive = isAlive;
-	}
-
 	/**
 	 * @return the health
 	 */
@@ -231,8 +233,87 @@ public class MainActor extends Actor {
 	/**
 	 * @param health the health to set
 	 */
-	public void setHealth(int health) {
-		this.health = health;
+	public void increaseHealth(int health) {
+		this.health += health;
+
+		if (getAnimationType() == AnimationType.PLAYER1) {
+			switch (this.health) {
+				case 5:
+					healthBar = Resources.getInstance().health1;
+					break;
+				case 4:
+					healthBar = Resources.getInstance().health1_2;
+					break;
+				case 3:
+					healthBar = Resources.getInstance().health1_3;
+					break;
+				case 2:
+					healthBar = Resources.getInstance().health1_4;
+					break;
+				case 1:
+					healthBar = Resources.getInstance().health1_5;
+					break;
+				case 0:
+					healthBar = Resources.getInstance().health6;
+					break;
+			}
+		} else if (getAnimationType() == AnimationType.PLAYER2) {
+			switch (health) {
+				case 5:
+					healthBar = Resources.getInstance().health1;
+					break;
+				case 4:
+					healthBar = Resources.getInstance().health2_2;
+					break;
+				case 3:
+					healthBar = Resources.getInstance().health2_3;
+					break;
+				case 2:
+					healthBar = Resources.getInstance().health2_4;
+					break;
+				case 1:
+					healthBar = Resources.getInstance().health2_5;
+					break;
+				case 0:
+					healthBar = Resources.getInstance().health6;
+					break;
+			}
+		}
+	}
+
+	/**
+	 * @return the healthBar
+	 */
+	public Image getHealthBar() {
+		return healthBar;
+	}
+
+	/**
+	 * @return the lives
+	 */
+	public int getLives() {
+		return lives;
+	}
+
+	/**
+	 * @param lives the lives to increase
+	 */
+	public void increaseLives(int lives) {
+		this.lives += lives;
+	}
+
+	/**
+	 * @return the score
+	 */
+	public String getScore() {
+		return String.valueOf(score);
+	}
+
+	/**
+	 * @param score the score to increase
+	 */
+	public void increaseScore(long score) {
+		this.score += score;
 	}
 
 	@Override

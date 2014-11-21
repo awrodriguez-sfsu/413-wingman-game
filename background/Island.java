@@ -6,10 +6,10 @@ package background;
 import java.awt.Dimension;
 import java.util.Random;
 
-import enums.AnimationType;
-import enums.GameObjectType;
 import wingman.GameBase;
 import wingman.GameObject;
+import enums.AnimationType;
+import enums.GameObjectType;
 
 /**
  * @author Anthony Rodriguez

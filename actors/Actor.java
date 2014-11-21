@@ -22,6 +22,8 @@ public abstract class Actor extends GameObject {
 	private boolean isMovingRight;
 	private boolean canFirePrimary = true;
 	private boolean canFireSecondary = true;
+
+	private boolean isAlive;
 	private boolean isExploding;
 
 	protected double x_speed;
@@ -31,6 +33,7 @@ public abstract class Actor extends GameObject {
 
 	public Actor(AnimationType image, GameObjectType type, int x_pos, int y_pos) {
 		super(image, type, x_pos, y_pos);
+		this.isAlive = true;
 	}
 
 	/**
@@ -76,13 +79,6 @@ public abstract class Actor extends GameObject {
 	}
 
 	/**
-	 * @return the isExploding
-	 */
-	public boolean isExploding() {
-		return isExploding;
-	}
-
-	/**
 	 * @param isMovingUp the isMovingUp to set
 	 */
 	public void setMovingUp(boolean isMovingUp) {
@@ -125,10 +121,31 @@ public abstract class Actor extends GameObject {
 	}
 
 	/**
+	 * @return the isExploding
+	 */
+	public boolean isExploding() {
+		return isExploding;
+	}
+
+	/**
 	 * @param isExploding the isExploding to set
 	 */
 	public void setExploding(boolean isExploding) {
 		this.isExploding = isExploding;
+	}
+
+	/**
+	 * @return the isAlive
+	 */
+	public boolean isAlive() {
+		return isAlive;
+	}
+
+	/**
+	 * @param isAlive the isAlive to set
+	 */
+	public void setAlive(boolean isAlive) {
+		this.isAlive = isAlive;
 	}
 
 	/**
@@ -168,10 +185,6 @@ public abstract class Actor extends GameObject {
 	public abstract void update(int width, int height);
 
 	public abstract boolean isVisible();
-
-	public abstract boolean isAlive();
-
-	public abstract void setAlive(boolean isAlive);
 
 	public abstract boolean isColliding(Actor actor);
 }

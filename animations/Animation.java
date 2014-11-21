@@ -55,7 +55,8 @@ public class Animation {
 				if (animationTime >= totalDuration) {
 					if (object.getType() == GameObjectType.ENEMY) {
 						( (Enemy) object ).setAlive(false);
-					} else if (object.getType() == GameObjectType.PLAYER1) {
+						( (Enemy) object ).checkDrop();
+					} else if (object.getType() == GameObjectType.PLAYER) {
 						( (MainActor) object ).setAlive(false);
 					}
 					frames.clear();

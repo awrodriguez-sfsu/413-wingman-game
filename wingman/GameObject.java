@@ -33,6 +33,8 @@ public abstract class GameObject {
 
 	private GameObjectType type;
 
+	private AnimationType image;
+
 	private SolidResourceSpecification specification;
 
 	private ArrayList<CollisionCircle> collisionCircles;
@@ -48,6 +50,7 @@ public abstract class GameObject {
 		this.x_pos = x_pos;
 		this.y_pos = y_pos;
 		this.type = type;
+		this.setAnimationType(image);
 
 		if (isSolid) {
 			collisionCircles = new ArrayList<CollisionCircle>();
@@ -72,16 +75,19 @@ public abstract class GameObject {
 
 	public void draw(Graphics graphics, ImageObserver observer) {
 		graphics.drawImage(animation.getImage(), x_pos, y_pos, observer);
-//		if (isSolid) {
-//			for (int i = 0; i < collisionRectangles.size(); i++) {
-//				CollisionRectangle rectangle = (CollisionRectangle) collisionRectangles.get(i);
-//				graphics.drawRect((int) rectangle.getX(), (int) rectangle.getY(), (int) rectangle.getWidth(), (int) rectangle.getHeight());
-//			}
-//			for (int i = 0; i < collisionCircles.size(); i++) {
-//				CollisionCircle circle = (CollisionCircle) collisionCircles.get(i);
-//				graphics.drawOval((int) circle.getX(), (int) circle.getY(), (int) circle.getWidth(), (int) circle.getHeight());
-//			}
-//		}
+		// if (isSolid) {
+		// for (int i = 0; i < collisionRectangles.size(); i++) {
+		// CollisionRectangle rectangle = (CollisionRectangle)
+		// collisionRectangles.get(i);
+		// graphics.drawRect((int) rectangle.getX(), (int) rectangle.getY(),
+		// (int) rectangle.getWidth(), (int) rectangle.getHeight());
+		// }
+		// for (int i = 0; i < collisionCircles.size(); i++) {
+		// CollisionCircle circle = (CollisionCircle) collisionCircles.get(i);
+		// graphics.drawOval((int) circle.getX(), (int) circle.getY(), (int)
+		// circle.getWidth(), (int) circle.getHeight());
+		// }
+		// }
 
 		animation.update(16, this);
 	}
@@ -98,6 +104,20 @@ public abstract class GameObject {
 	 */
 	public void setAnimation(Animation animation) {
 		this.animation = animation;
+	}
+
+	/**
+	 * @return the image
+	 */
+	public AnimationType getAnimationType() {
+		return image;
+	}
+
+	/**
+	 * @param image the image to set
+	 */
+	public void setAnimationType(AnimationType image) {
+		this.image = image;
 	}
 
 	/**

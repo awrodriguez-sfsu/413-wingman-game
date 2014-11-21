@@ -5,7 +5,7 @@ package enums;
  *
  */
 public enum GameObjectType {
-	PLAYER1(1),
+	PLAYER(1),
 	ENEMY(2),
 	PROJECTILE(3),
 	POWERUP(4),
