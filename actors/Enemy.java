@@ -124,7 +124,6 @@ public class Enemy extends Actor {
 					}
 					break;
 				default:
-					System.out.println("6?");
 					break;
 			}
 			actionTime = -16;
@@ -166,10 +165,6 @@ public class Enemy extends Actor {
 		}
 
 		actionTime += 16;
-
-		if (( y_pos < 0 || y_pos > 800 ) && isVisible()) {
-			System.out.println(type.getName() + " x_pos: " + x_pos + " y_pos: " + y_pos + " visible: " + isVisible());
-		}
 	}
 
 	@Override

@@ -25,6 +25,7 @@ public class ResourceClassBuilder {
 	private static ArrayList<String> solidSpecs = new ArrayList<String>();
 	private static ArrayList<String> imageSpecs = new ArrayList<String>();
 	private static ArrayList<String> sounds = new ArrayList<String>();
+	public static ArrayList<String> topScores = new ArrayList<String>();
 
 	public static void main(String[] args) {
 		// String resourcePath = "/home/arod/Desktop//Wingman/Resources";
@@ -37,10 +38,21 @@ public class ResourceClassBuilder {
 		String resourcePath = "C:\\Users\\arodr101\\Desktop\\Wingman\\Resources";
 		String solidResourcesText = "C:\\Users\\arodr101\\Desktop\\Wingman\\solid_resources.txt";
 		String imageResourcesText = "C:\\Users\\arodr101\\Desktop\\Wingman\\image_resources.txt";
+		String scoreboardText = "C:\\Users\\arodr101\\Desktop\\Wingman\\top_scores.txt";
 		String resourcesJSON = "C:\\Users\\arodr101\\Desktop\\Wingman\\resources.json";
 
 		String jarRun = "../"; // Applet Configuration
 		// String jarRun = ""; // Jar Configuration
+
+		System.out.println("Getting top scores");
+		try (BufferedReader br = new BufferedReader(new FileReader(scoreboardText))) {
+			for (String line; ( line = br.readLine() ) != null;) {
+				topScores.add(line);
+			}
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
 
 		System.out.println("Getting solid_resources.txt");
 		try (BufferedReader br = new BufferedReader(new FileReader(solidResourcesText))) {
@@ -92,6 +104,8 @@ public class ResourceClassBuilder {
 
 		FileUtilities.copyFile(new File(resourcesJSON), new File("resources.json"));
 
+		FileUtilities.copyFile(new File(scoreboardText), new File("top_scores.txt"));
+
 		System.out.println("Writing Resources.java");
 		Writer writer = null;
 
@@ -102,9 +116,13 @@ public class ResourceClassBuilder {
 			writer.write(newline);
 			writer.write("import java.applet.AudioClip;" + newline);
 			writer.write("import java.awt.Image;" + newline);
+			writer.write("import java.io.BufferedReader;" + newline);
+			writer.write("import java.io.BufferedWriter;" + newline);
 			writer.write("import java.io.File;" + newline);
+			writer.write("import java.io.FileOutputStream;" + newline);
 			writer.write("import java.io.FileReader;" + newline);
 			writer.write("import java.io.IOException;" + newline);
+			writer.write("import java.io.OutputStreamWriter;" + newline);
 			writer.write("import java.net.MalformedURLException;" + newline);
 			writer.write("import java.util.ArrayList;" + newline);
 			writer.write(newline);
@@ -174,6 +192,13 @@ public class ResourceClassBuilder {
 			writer.write(";" + newline);
 			writer.write(newline);
 
+			// TopScores
+			for (int i = 1; i <= 5; i++) {
+				writer.write(tab + "public static int scoreNumber" + i + ";" + newline);
+				writer.write(tab + "public static String score" + i + ";" + newline);
+			}
+			writer.write(newline);
+
 			// Constructor
 			writer.write(tab + "private Resources() {" + newline);
 			writer.write(tab + tab + "try {" + newline);
@@ -227,7 +252,38 @@ public class ResourceClassBuilder {
 			writer.write(tab + "}" + newline);
 			writer.write(newline);
 
-			// writer.write(tab + tab + tab + tab + "" + newline);
+			// getTopScores()
+			writer.write(tab + "private static void getTopScores() {" + newline);
+			
+			writer.write(tab + "}" + newline);
+			writer.write(newline);
+
+			// writeTopScores()
+			writer.write(tab + "public static void writeTopScores() {" + newline);
+			writer.write(tab + tab + "BufferedWriter writer = null;" + newline);
+			writer.write(tab + tab + "try {" + newline);
+			writer.write(tab + tab + tab + "writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(\"" + jarRun + "top_scores.txt\"), \"utf-8\"));" + newline);
+			for (int i = 1; i <= 5; i++) {
+				writer.write(tab + tab + tab + "writer.write(score" + i + " + \"\\n\");" + newline);
+			}
+			for (int i = 1; i <= 5; i++) {
+				writer.write(tab + tab + tab + "writer.write(\"\" + scoreNumber" + i + ");" + newline);
+				if (i < 5) {
+					writer.write(tab + tab + tab + "writer.write(\"\\n\");" + newline);
+				}
+			}
+			writer.write(tab + tab + "} catch (Exception exception) {" + newline);
+			writer.write(tab + tab + tab + "exception.printStackTrace();" + newline);
+			writer.write(tab + tab + "} finally {" + newline);
+			writer.write(tab + tab + tab + "try {" + newline);
+			writer.write(tab + tab + tab + tab + "writer.close();" + newline);
+			writer.write(tab + tab + tab + "} catch (Exception exception) {" + newline);
+			writer.write(tab + tab + tab + tab + "exception.printStackTrace();" + newline);
+			writer.write(tab + tab + tab + "}" + newline);
+			writer.write(tab + tab + "}" + newline);
+			writer.write(tab + "}" + newline);
+			writer.write(newline);
+
 			// getSolidSpec() member method
 			writer.write(tab + "public static SolidResourceSpecification getSolidSpec(String name) {" + newline);
 			writer.write(newline);

@@ -258,7 +258,7 @@ public class MainActor extends Actor {
 					break;
 			}
 		} else if (getAnimationType() == AnimationType.PLAYER2) {
-			switch (health) {
+			switch (this.health) {
 				case 5:
 					healthBar = Resources.getInstance().health1;
 					break;
@@ -326,14 +326,12 @@ public class MainActor extends Actor {
 		for (int i = 0; i < playerCircles.size(); i++) {
 			for (int j = 0; j < actorCircles.size(); j++) {
 				if (playerCircles.get(i).intersects(actorCircles.get(j).getBounds2D())) {
-					System.out.println("Player Cicle with Actor Circle");
 					return true;
 				}
 			}
 
 			for (int j = 0; j < actorRectangles.size(); j++) {
 				if (playerCircles.get(i).intersects(actorRectangles.get(j))) {
-					System.out.println("Player Cicle with Actor Rectangle");
 					return true;
 				}
 			}

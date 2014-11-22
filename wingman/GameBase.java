@@ -1,8 +1,10 @@
 package wingman;
 
+import java.applet.AudioClip;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -20,6 +22,7 @@ import javax.swing.JApplet;
 import javax.swing.JFrame;
 
 import projectiles.Projectile;
+import wingman.Resources.ImageSpecification;
 import actors.Enemy;
 import actors.MainActor;
 import animations.Animation;
@@ -33,9 +36,15 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 	private final int WIDTH = 800;
 	private final int HEIGHT = 800;
 
+	private boolean godMode = false;
+
+	private boolean gameOver = false;
+
 	private int backgroundMovement = 0;
 
 	private static Dimension dimension;
+
+	private FontMetrics metrics;
 
 	private BufferedImage bufferedImage;
 
@@ -43,7 +52,7 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 
 	public static HashMap<AnimationType, Animation> animations = new HashMap<AnimationType, Animation>();
 
-	private Animation mainCharacter, enemy1, enemy2, enemy3, enemy4;
+	private Animation player1Animation, player2Animation, enemy1, enemy2, enemy3, enemy4;
 
 	private Animation background, island1, island2, island3;
 
@@ -56,12 +65,16 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 	private ArrayList<Island> islands = new ArrayList<Island>();
 
+	private AudioClip backgroundSound = Resources.getInstance().background_sound;
+
 	@Override
 	public void init() {
 		setSize(WIDTH, HEIGHT);
 		setBackground(Color.BLACK);
 		setFocusable(true);
 		addKeyListener(this);
+		setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
+		metrics = getFontMetrics(getFont());
 
 		dimension = getSize();
 
@@ -69,14 +82,19 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 
 		player1 = new MainActor(AnimationType.PLAYER1, AnimationType.BULLET, AnimationType.BIG_BULLET, WIDTH / 2, HEIGHT - 128);
 
-		player2 = new MainActor(AnimationType.PLAYER1, AnimationType.BULLET, AnimationType.BIG_BULLET, WIDTH / 3, HEIGHT - 128);
+		player2 = new MainActor(AnimationType.PLAYER2, AnimationType.BULLET, AnimationType.BIG_BULLET, WIDTH / 3, HEIGHT - 128);
 	}
 
 	private void setupImages() {
-		mainCharacter = new Animation();
-		mainCharacter.addFrame(Resources.getInstance().player1_1, 100);
-		mainCharacter.addFrame(Resources.getInstance().player1_2, 100);
-		mainCharacter.addFrame(Resources.getInstance().player1_3, 100);
+		player1Animation = new Animation();
+		player1Animation.addFrame(Resources.getInstance().player1_1, 100);
+		player1Animation.addFrame(Resources.getInstance().player1_2, 100);
+		player1Animation.addFrame(Resources.getInstance().player1_3, 100);
+
+		player2Animation = new Animation();
+		player2Animation.addFrame(Resources.getInstance().player2_1, 100);
+		player2Animation.addFrame(Resources.getInstance().player2_2, 100);
+		player2Animation.addFrame(Resources.getInstance().player2_3, 100);
 
 		enemy1 = new Animation();
 		enemy1.addFrame(Resources.getInstance().enemy1_1, 100);
@@ -122,7 +140,8 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 		enemyWeapon2 = new Animation();
 		enemyWeapon2.addFrame(Resources.getInstance().enemy_bullet2, 1);
 
-		animations.put(AnimationType.PLAYER1, mainCharacter);
+		animations.put(AnimationType.PLAYER1, player1Animation);
+		animations.put(AnimationType.PLAYER2, player2Animation);
 		animations.put(AnimationType.ENEMY1, enemy1);
 		animations.put(AnimationType.ENEMY2, enemy2);
 		animations.put(AnimationType.ENEMY3, enemy3);
@@ -142,17 +161,17 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 		Thread thread = new Thread(this);
 		thread.setPriority(Thread.MIN_PRIORITY);
 		thread.start();
+
+		backgroundSound.loop();
 	}
 
 	@Override
 	public void stop() {
-		// TODO Auto-generated method stub
 		super.stop();
 	}
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
 		super.destroy();
 	}
 
@@ -318,25 +337,77 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 				if (player1.isColliding(enemy)) {
 					enemy.explode();
 					player1.increaseHealth(-1);
+					player1.increaseScore(10);
 				}
 
 				if (player2.isColliding(enemy)) {
 					enemy.explode();
 					player2.increaseHealth(-1);
+					player2.increaseScore(10);
 				}
 			}
 
-			if (player1.getHealth() == 0 && !player1.isExploding()) {
+			if (player1.getHealth() == 0 && !player1.isExploding() && !godMode) {
 				player1.explode();
 			}
 
-			if (player2.getHealth() == 0 && !player2.isExploding()) {
+			if (player2.getHealth() == 0 && !player2.isExploding() && !godMode) {
 				player2.explode();
 			}
 
 			drawHUD(width, height, graphics2d);
 		} else {
+			backgroundSound.stop();
 			graphics2d.drawImage(Resources.getInstance().game_over, (int) ( ( width / 2 ) - Resources.getInstance().game_over_image_spec.center_x ), (int) ( ( height / 2 ) - Resources.getInstance().game_over_image_spec.center_y ), this);
+
+			graphics2d.setColor(Color.WHITE);
+			graphics2d.drawString("ScoreBoard", (int) ( ( width / 2 ) - 98 ), (int) ( ( height / 2 ) + Resources.getInstance().game_over_image_spec.bottom ));
+
+			if (!gameOver) {
+				int player1Score = Integer.parseInt(player1.getScore());
+				if (player1Score > Resources.scoreNumber1) {
+					Resources.score1 = "player1";
+					Resources.scoreNumber1 = (int) player1Score;
+				} else if (player1Score > Resources.scoreNumber2) {
+					Resources.score2 = "player1";
+					Resources.scoreNumber2 = (int) player1Score;
+				} else if (player1Score > Resources.scoreNumber3) {
+					Resources.score3 = "player1";
+					Resources.scoreNumber3 = (int) player1Score;
+				} else if (player1Score > Resources.scoreNumber4) {
+					Resources.score4 = "player1";
+					Resources.scoreNumber4 = (int) player1Score;
+				} else if (player1Score > Resources.scoreNumber5) {
+					Resources.score5 = "player1";
+					Resources.scoreNumber5 = (int) player1Score;
+				}
+				int player2Score = Integer.parseInt(player2.getScore());
+				if (player2Score > Resources.scoreNumber1) {
+					Resources.score1 = "player2";
+					Resources.scoreNumber1 = (int) player2Score;
+				} else if (player2Score > Resources.scoreNumber2) {
+					Resources.score2 = "player2";
+					Resources.scoreNumber2 = (int) player2Score;
+				} else if (player2Score > Resources.scoreNumber3) {
+					Resources.score3 = "player2";
+					Resources.scoreNumber3 = (int) player2Score;
+				} else if (player2Score > Resources.scoreNumber4) {
+					Resources.score4 = "player2";
+					Resources.scoreNumber4 = (int) player2Score;
+				} else if (player2Score > Resources.scoreNumber5) {
+					Resources.score5 = "player2";
+					Resources.scoreNumber5 = (int) player2Score;
+				}
+				gameOver = true;
+
+				Resources.writeTopScores();
+			}
+
+			graphics2d.drawString("1: " + Resources.score1 + "          " + Resources.scoreNumber1, (int) ( ( width / 2 ) - 150 ), (int) ( ( height / 2 ) + Resources.getInstance().game_over_image_spec.bottom + 50 ));
+			graphics2d.drawString("2: " + Resources.score2 + "          " + Resources.scoreNumber2, (int) ( ( width / 2 ) - 150 ), (int) ( ( height / 2 ) + Resources.getInstance().game_over_image_spec.bottom + 100 ));
+			graphics2d.drawString("3: " + Resources.score3 + "          " + Resources.scoreNumber3, (int) ( ( width / 2 ) - 150 ), (int) ( ( height / 2 ) + Resources.getInstance().game_over_image_spec.bottom + 150 ));
+			graphics2d.drawString("4: " + Resources.score4 + "          " + Resources.scoreNumber4, (int) ( ( width / 2 ) - 150 ), (int) ( ( height / 2 ) + Resources.getInstance().game_over_image_spec.bottom + 200 ));
+			graphics2d.drawString("5: " + Resources.score5 + "          " + Resources.scoreNumber5, (int) ( ( width / 2 ) - 150 ), (int) ( ( height / 2 ) + Resources.getInstance().game_over_image_spec.bottom + 250 ));
 		}
 	}
 
@@ -357,8 +428,9 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 	}
 
 	private void drawHUD(int width, int height, Graphics2D graphics2d) {
-		int center_x = (int) Resources.getInstance().hud_bottom_image_spec.center_x;
-		int bottom = (int) Resources.getInstance().hud_bottom_image_spec.bottom;
+		ImageSpecification hud = Resources.getInstance().hud_bottom_image_spec;
+		int center_x = (int) hud.center_x;
+		int bottom = (int) hud.bottom;
 
 		int healtLeftX = (int) Resources.getInstance().hud_health_position1_image_spec.left;
 		int healtLeftY = (int) Resources.getInstance().hud_health_position1_image_spec.top;
@@ -369,13 +441,13 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 		int tileHeight = (int) Resources.getInstance().hud_tile_image_spec.bottom;
 
 		int amountX = (int) ( width / tileWidth );
-		int amountY = (int) ( ( Resources.getInstance().hud_bottom_image_spec.bottom ) / tileHeight );
+		int amountY = ( bottom / tileHeight );
 
 		for (int i = 0; i <= amountX; i++) {
 			for (int j = 0; j <= amountY; j++) {
-				graphics2d.drawImage(Resources.getInstance().hud_tile, i * tileWidth, ( j + height - 76 ), tileWidth, tileHeight, this);
-				graphics2d.drawImage(Resources.getInstance().hud_tile, i * tileWidth, ( 32 * j + height - 76 ), tileWidth, tileHeight, this);
-				graphics2d.drawImage(Resources.getInstance().hud_tile, i * tileWidth, ( 64 * j + height - 76 ), tileWidth, tileHeight, this);
+				graphics2d.drawImage(Resources.getInstance().hud_tile, i * tileWidth, ( j + height - bottom ), tileWidth, tileHeight, this);
+				graphics2d.drawImage(Resources.getInstance().hud_tile, i * tileWidth, ( 32 * j + height - bottom ), tileWidth, tileHeight, this);
+				graphics2d.drawImage(Resources.getInstance().hud_tile, i * tileWidth, ( 64 * j + height - bottom ), tileWidth, tileHeight, this);
 			}
 		}
 
@@ -386,12 +458,9 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 		graphics2d.drawImage(player2.getHealthBar(), ( ( width / 2 ) - center_x ) + healtLeftX, ( height - bottom ) + healtLeftY, this);
 		graphics2d.drawImage(player1.getHealthBar(), ( ( width / 2 ) - center_x ) + healtRightX, ( height - bottom ) + healtRightY, this);
 
-		// Score
 		graphics2d.setColor(Color.WHITE);
-		graphics2d.setFont(new Font("TimesRoman", Font.BOLD, 24));
-		graphics2d.drawString(player1.getScore(), 0, 750);
-		graphics2d.drawString(player2.getScore(), 0, 775);
-
+		graphics2d.drawString(player1.getScore(), (int) ( width - 10 - ( metrics.stringWidth(player1.getScore()) ) + 2 ), (int) ( height - hud.bottom + 24 ));
+		graphics2d.drawString(player2.getScore(), 10, (int) ( height - hud.bottom + 24 ));
 	}
 
 	private void generateEnemies(int enemies) {
@@ -651,7 +720,33 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 			case KeyEvent.VK_Q:
 				player1.explode();
 				player2.explode();
+
 				break;
+
+		// case KeyEvent.VK_1:
+		// player1.increaseScore(10);
+		// player2.increaseScore(10);
+		// break;
+		//
+		// case KeyEvent.VK_2:
+		// player1.increaseScore(100);
+		// player2.increaseScore(100);
+		// break;
+		//
+		// case KeyEvent.VK_3:
+		// player1.increaseScore(1000);
+		// player2.increaseScore(1000);
+		// break;
+		//
+		// case KeyEvent.VK_4:
+		// player1.increaseScore(10000);
+		// player2.increaseScore(10000);
+		// break;
+		//
+		// case KeyEvent.VK_5:
+		// player1.increaseScore(10000000);
+		// player2.increaseScore(10000000);
+		// break;
 		}
 	}
 

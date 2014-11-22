@@ -2,9 +2,13 @@ package wingman;
 
 import java.applet.AudioClip;
 import java.awt.Image;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 
@@ -18,13 +22,24 @@ import org.json.simple.parser.JSONParser;
 public class Resources {
 
 	private static Resources instance;
-	public Image big_bullet, bullet, bullet_left, bullet_right, enemy1_1, enemy1_2, enemy1_3, enemy2_1, enemy2_2, enemy2_3, enemy3_1, enemy3_2, enemy3_3, enemy4_1, enemy4_2, enemy4_3, enemy_bullet1, enemy_bullet2, explosion1_1, explosion1_2, explosion1_3, explosion1_4, explosion1_5, explosion1_6, explosion2_1, explosion2_2, explosion2_3, explosion2_4, explosion2_5, explosion2_6, explosion2_7, game_over, health1, health1_2, health1_3, health1_4, health1_5, health2_2, health2_3, health2_4, health2_5, health6, hud_bottom, hud_tile, island1, island2, island3, life, player1_1, player1_2, player1_3, power_up, water;
+	public Image big_bullet, bullet, bullet_left, bullet_right, enemy1_1, enemy1_2, enemy1_3, enemy2_1, enemy2_2, enemy2_3, enemy3_1, enemy3_2, enemy3_3, enemy4_1, enemy4_2, enemy4_3, enemy_bullet1, enemy_bullet2, explosion1_1, explosion1_2, explosion1_3, explosion1_4, explosion1_5, explosion1_6, explosion2_1, explosion2_2, explosion2_3, explosion2_4, explosion2_5, explosion2_6, explosion2_7, game_over, health1, health1_2, health1_3, health1_4, health1_5, health2_2, health2_3, health2_4, health2_5, health6, hud_bottom, hud_tile, island1, island2, island3, life1, life1_pickup, life2, life2_pickup, player1_1, player1_2, player1_3, player2_1, player2_2, player2_3, power_up, water;
 
-	public ImageSpecification game_over_image_spec, hud_health_image_spec, hud_health_position1_image_spec, hud_health_position2_image_spec, hud_bottom_image_spec, life_image_spec, hud_tile_image_spec;
+	public ImageSpecification game_over_image_spec, hud_health_image_spec, hud_health_position1_image_spec, hud_health_position2_image_spec, hud_bottom_image_spec, life1_image_spec, life2_image_spec, hud_tile_image_spec;
 
-	public static SolidResourceSpecification big_bullet_spec, bullet_spec, bullet_left_spec, bullet_right_spec, enemy_bullet1_spec, enemy_bullet2_spec, enemy1_spec, enemy2_spec, enemy3_spec, enemy4_spec, player1_spec, power_up_spec;
+	public static SolidResourceSpecification big_bullet_spec, bullet_spec, bullet_left_spec, bullet_right_spec, enemy_bullet1_spec, enemy_bullet2_spec, enemy1_spec, enemy2_spec, enemy3_spec, enemy4_spec, player1_spec, player2_spec, life1_pickup_spec, life2_pickup_spec, power_up_spec;
 
-	public AudioClip background_sound, large_explosion_sound, small_explosion_sound;
+	public AudioClip background_sound, game_over_sound, large_explosion_sound, small_explosion_sound;
+
+	public static int scoreNumber1;
+	public static String score1;
+	public static int scoreNumber2;
+	public static String score2;
+	public static int scoreNumber3;
+	public static String score3;
+	public static int scoreNumber4;
+	public static String score4;
+	public static int scoreNumber5;
+	public static String score5;
 
 	private Resources() {
 		try {
@@ -75,12 +90,20 @@ public class Resources {
 			island1 = ImageIO.read(new File("../resources/island1.png"));
 			island2 = ImageIO.read(new File("../resources/island2.png"));
 			island3 = ImageIO.read(new File("../resources/island3.png"));
-			life = ImageIO.read(new File("../resources/life.png"));
+			life1 = ImageIO.read(new File("../resources/life1.png"));
+			life1_pickup = ImageIO.read(new File("../resources/life1_pickup.png"));
+			life2 = ImageIO.read(new File("../resources/life2.png"));
+			life2_pickup = ImageIO.read(new File("../resources/life2_pickup.png"));
 			player1_1 = ImageIO.read(new File("../resources/player1_1.png"));
 			player1_2 = ImageIO.read(new File("../resources/player1_2.png"));
 			player1_3 = ImageIO.read(new File("../resources/player1_3.png"));
+			player2_1 = ImageIO.read(new File("../resources/player2_1.png"));
+			player2_2 = ImageIO.read(new File("../resources/player2_2.png"));
+			player2_3 = ImageIO.read(new File("../resources/player2_3.png"));
 			power_up = ImageIO.read(new File("../resources/power_up.png"));
 			water = ImageIO.read(new File("../resources/water.png"));
+
+			getTopScores();
 
 		} catch (IOException ioException) {
 			ioException.printStackTrace();
@@ -88,6 +111,7 @@ public class Resources {
 
 		try {
 			background_sound = JApplet.newAudioClip(( new File("../resources/background_sound.wav").toURI().toURL() ));
+			game_over_sound = JApplet.newAudioClip(( new File("../resources/game_over_sound.wav").toURI().toURL() ));
 			large_explosion_sound = JApplet.newAudioClip(( new File("../resources/large_explosion_sound.wav").toURI().toURL() ));
 			small_explosion_sound = JApplet.newAudioClip(( new File("../resources/small_explosion_sound.wav").toURI().toURL() ));
 
@@ -106,6 +130,9 @@ public class Resources {
 		enemy3_spec = new SolidResourceSpecification("enemy3");
 		enemy4_spec = new SolidResourceSpecification("enemy4");
 		player1_spec = new SolidResourceSpecification("player1");
+		player2_spec = new SolidResourceSpecification("player2");
+		life1_pickup_spec = new SolidResourceSpecification("life1_pickup");
+		life2_pickup_spec = new SolidResourceSpecification("life2_pickup");
 		power_up_spec = new SolidResourceSpecification("power_up");
 
 		game_over_image_spec = new ImageSpecification("game_over");
@@ -113,7 +140,8 @@ public class Resources {
 		hud_health_position1_image_spec = new ImageSpecification("hud_health_position1");
 		hud_health_position2_image_spec = new ImageSpecification("hud_health_position2");
 		hud_bottom_image_spec = new ImageSpecification("hud_bottom");
-		life_image_spec = new ImageSpecification("life");
+		life1_image_spec = new ImageSpecification("life1");
+		life2_image_spec = new ImageSpecification("life2");
 		hud_tile_image_spec = new ImageSpecification("hud_tile");
 	}
 
@@ -123,6 +151,74 @@ public class Resources {
 		}
 
 		return instance;
+	}
+
+	private void getTopScores() {
+		try (BufferedReader br = new BufferedReader(new FileReader("../top_scores.txt"))) {
+			String line;
+
+			line = br.readLine();
+			score1 = line;
+
+			line = br.readLine();
+			score2 = line;
+
+			line = br.readLine();
+			score3 = line;
+
+			line = br.readLine();
+			score4 = line;
+
+			line = br.readLine();
+			score5 = line;
+
+			line = br.readLine();
+			scoreNumber1 = (int) Integer.parseInt(line);
+
+			line = br.readLine();
+			scoreNumber2 = (int) Integer.parseInt(line);
+
+			line = br.readLine();
+			scoreNumber3 = (int) Integer.parseInt(line);
+
+			line = br.readLine();
+			scoreNumber4 = (int) Integer.parseInt(line);
+
+			line = br.readLine();
+			scoreNumber5 = (int) Integer.parseInt(line);
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+	}
+
+	public static void writeTopScores() {
+		BufferedWriter writer = null;
+		try {
+			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("../top_scores.txt"), "utf-8"));
+			writer.write(score1 + "\n");
+			writer.write(score2 + "\n");
+			writer.write(score3 + "\n");
+			writer.write(score4 + "\n");
+			writer.write(score5 + "\n");
+			writer.write("" + scoreNumber1);
+			writer.write("\n");
+			writer.write("" + scoreNumber2);
+			writer.write("\n");
+			writer.write("" + scoreNumber3);
+			writer.write("\n");
+			writer.write("" + scoreNumber4);
+			writer.write("\n");
+			writer.write("" + scoreNumber5);
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		} finally {
+			try {
+				writer.close();
+			} catch (Exception exception) {
+				exception.printStackTrace();
+			}
+		}
 	}
 
 	public static SolidResourceSpecification getSolidSpec(String name) {
@@ -154,6 +250,12 @@ public class Resources {
 				return enemy4_spec;
 			case "player1":
 				return player1_spec;
+			case "player2":
+				return player2_spec;
+			case "life1_pickup":
+				return life1_pickup_spec;
+			case "life2_pickup":
+				return life2_pickup_spec;
 			case "power_up":
 				return power_up_spec;
 			default:
