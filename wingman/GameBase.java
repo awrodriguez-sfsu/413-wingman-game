@@ -13,7 +13,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -25,22 +24,28 @@ import projectiles.Projectile;
 import wingman.Resources.ImageSpecification;
 import actors.Enemy;
 import actors.MainActor;
-import animations.Animation;
 import background.Island;
+import background.ItemDrop;
 import enums.AnimationType;
 
 public class GameBase extends JApplet implements Runnable, KeyListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private final int WIDTH = 800;
-	private final int HEIGHT = 800;
+	private Resources resources = Resources.getInstance();;
+
+	private final static int WIDTH = 800;
+	private final static int HEIGHT = 800;
+
+	public static int level = 1;
+
+	private int enemiesKilled = 0;
+
+	private int backgroundMovement = 0;
 
 	private boolean godMode = false;
 
 	private boolean gameOver = false;
-
-	private int backgroundMovement = 0;
 
 	private static Dimension dimension;
 
@@ -50,14 +55,6 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 
 	private Random generator = new Random();
 
-	public static HashMap<AnimationType, Animation> animations = new HashMap<AnimationType, Animation>();
-
-	private Animation player1Animation, player2Animation, enemy1, enemy2, enemy3, enemy4;
-
-	private Animation background, island1, island2, island3;
-
-	private Animation bullet, big_bullet, enemyWeapon1, enemyWeapon2;
-
 	private MainActor player1;
 
 	private MainActor player2;
@@ -65,7 +62,9 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 	private ArrayList<Island> islands = new ArrayList<Island>();
 
-	private AudioClip backgroundSound = Resources.getInstance().background_sound;
+	public static ArrayList<ItemDrop> drops = new ArrayList<ItemDrop>();
+
+	private AudioClip backgroundSound = resources.background_sound;
 
 	@Override
 	public void init() {
@@ -78,82 +77,9 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 
 		dimension = getSize();
 
-		setupImages();
-
 		player1 = new MainActor(AnimationType.PLAYER1, AnimationType.BULLET, AnimationType.BIG_BULLET, WIDTH / 2, HEIGHT - 128);
 
 		player2 = new MainActor(AnimationType.PLAYER2, AnimationType.BULLET, AnimationType.BIG_BULLET, WIDTH / 3, HEIGHT - 128);
-	}
-
-	private void setupImages() {
-		player1Animation = new Animation();
-		player1Animation.addFrame(Resources.getInstance().player1_1, 100);
-		player1Animation.addFrame(Resources.getInstance().player1_2, 100);
-		player1Animation.addFrame(Resources.getInstance().player1_3, 100);
-
-		player2Animation = new Animation();
-		player2Animation.addFrame(Resources.getInstance().player2_1, 100);
-		player2Animation.addFrame(Resources.getInstance().player2_2, 100);
-		player2Animation.addFrame(Resources.getInstance().player2_3, 100);
-
-		enemy1 = new Animation();
-		enemy1.addFrame(Resources.getInstance().enemy1_1, 100);
-		enemy1.addFrame(Resources.getInstance().enemy1_2, 100);
-		enemy1.addFrame(Resources.getInstance().enemy1_3, 100);
-
-		enemy2 = new Animation();
-		enemy2.addFrame(Resources.getInstance().enemy2_1, 100);
-		enemy2.addFrame(Resources.getInstance().enemy2_2, 100);
-		enemy2.addFrame(Resources.getInstance().enemy2_3, 100);
-
-		enemy3 = new Animation();
-		enemy3.addFrame(Resources.getInstance().enemy3_1, 100);
-		enemy3.addFrame(Resources.getInstance().enemy3_2, 100);
-		enemy3.addFrame(Resources.getInstance().enemy3_3, 100);
-
-		enemy4 = new Animation();
-		enemy4.addFrame(Resources.getInstance().enemy4_1, 100);
-		enemy4.addFrame(Resources.getInstance().enemy4_2, 100);
-		enemy4.addFrame(Resources.getInstance().enemy4_3, 100);
-
-		background = new Animation();
-		background.addFrame(Resources.getInstance().water, 1);
-
-		island1 = new Animation();
-		island1.addFrame(Resources.getInstance().island1, 1);
-
-		island2 = new Animation();
-		island2.addFrame(Resources.getInstance().island2, 1);
-
-		island3 = new Animation();
-		island3.addFrame(Resources.getInstance().island3, 1);
-
-		bullet = new Animation();
-		bullet.addFrame(Resources.getInstance().bullet, 1);
-
-		big_bullet = new Animation();
-		big_bullet.addFrame(Resources.getInstance().big_bullet, 1);
-
-		enemyWeapon1 = new Animation();
-		enemyWeapon1.addFrame(Resources.getInstance().enemy_bullet1, 1);
-
-		enemyWeapon2 = new Animation();
-		enemyWeapon2.addFrame(Resources.getInstance().enemy_bullet2, 1);
-
-		animations.put(AnimationType.PLAYER1, player1Animation);
-		animations.put(AnimationType.PLAYER2, player2Animation);
-		animations.put(AnimationType.ENEMY1, enemy1);
-		animations.put(AnimationType.ENEMY2, enemy2);
-		animations.put(AnimationType.ENEMY3, enemy3);
-		animations.put(AnimationType.ENEMY4, enemy4);
-		animations.put(AnimationType.BACKGROUND, background);
-		animations.put(AnimationType.ISLAND1, island1);
-		animations.put(AnimationType.ISLAND2, island2);
-		animations.put(AnimationType.ISLAND3, island3);
-		animations.put(AnimationType.BULLET, bullet);
-		animations.put(AnimationType.BIG_BULLET, big_bullet);
-		animations.put(AnimationType.ENEMY_BULLET1, enemyWeapon1);
-		animations.put(AnimationType.ENEMY_BULLET2, enemyWeapon2);
 	}
 
 	@Override
@@ -173,6 +99,7 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 	@Override
 	public void destroy() {
 		super.destroy();
+		System.out.println("destroyed");
 	}
 
 	@Override
@@ -212,7 +139,8 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 
 		Graphics2D graphics2d = null;
 
-		if (bufferedImage == null || bufferedImage.getWidth() != width || bufferedImage.getHeight() != height) {
+		if (bufferedImage == null || bufferedImage.getWidth() != width
+				|| bufferedImage.getHeight() != height) {
 			bufferedImage = (BufferedImage) createImage(width, height);
 		}
 
@@ -230,6 +158,11 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 		int minEnemies = 3;
 		int maxIslands = 10;
 		int minIslands = 4;
+
+		if (enemiesKilled >= ( 10 * level )) {
+			level++;
+			enemiesKilled = 0;
+		}
 
 		if (player1.isAlive() || player2.isAlive()) {
 			drawBackgroundWithTileImage(width, height, graphics2d);
@@ -255,7 +188,7 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 			player2.draw(graphics2d, this);
 
 			if (enemies.size() < 3) {
-				generateEnemies(generator.nextInt(( maxEnemies - minEnemies ) + 1) + minEnemies);
+				generateEnemies(generator.nextInt(( maxEnemies - minEnemies ) + level) + minEnemies);
 			} else {
 				for (int i = 0; i < enemies.size(); i++) {
 					Enemy enemy = (Enemy) enemies.get(i);
@@ -280,6 +213,7 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 
 						if (b.isColliding(enemy)) {
 							enemy.explode();
+							enemiesKilled++;
 							player1Shots.remove(b);
 							player1.increaseScore(10);
 						}
@@ -302,6 +236,7 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 
 						if (b.isColliding(enemy)) {
 							enemy.explode();
+							enemiesKilled++;
 							player2Shots.remove(b);
 							player2.increaseScore(10);
 						}
@@ -309,6 +244,43 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 
 				} else {
 					player2Shots.remove(i);
+				}
+			}
+
+			for (int i = 0; i < drops.size(); i++) {
+				ItemDrop drop = (ItemDrop) drops.get(i);
+				if (drop.isVisible()) {
+					drop.update(width, height);
+					drop.draw(graphics2d, this);
+
+					if (drop.isColliding(player1)) {
+						if (drop.getAnimationType() == AnimationType.LIFE1) {
+							player1.increaseLives(1);
+							drops.remove(drop);
+						} else if (drop.getAnimationType() == AnimationType.LIFE2) {
+							player2.increaseLives(1);
+							drops.remove(drop);
+						} else {
+							player1.increasePowerUp(1);
+							drops.remove(drop);
+						}
+					}
+
+					if (drop.isColliding(player2)) {
+						if (drop.getAnimationType() == AnimationType.LIFE1) {
+							player1.increaseLives(1);
+							drops.remove(drop);
+						} else if (drop.getAnimationType() == AnimationType.LIFE2) {
+							player2.increaseLives(1);
+							drops.remove(drop);
+						} else {
+							player2.increasePowerUp(1);
+							drops.remove(drop);
+						}
+					}
+
+				} else {
+					drops.remove(drop);
 				}
 			}
 
@@ -336,91 +308,160 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 
 				if (player1.isColliding(enemy)) {
 					enemy.explode();
+					enemiesKilled++;
 					player1.increaseHealth(-1);
 					player1.increaseScore(10);
 				}
 
 				if (player2.isColliding(enemy)) {
 					enemy.explode();
+					enemiesKilled++;
 					player2.increaseHealth(-1);
 					player2.increaseScore(10);
 				}
 			}
 
-			if (player1.getHealth() == 0 && !player1.isExploding() && !godMode) {
+			if (player1.getHealth() <= 0 && !player1.isExploding() && !godMode) {
 				player1.explode();
 			}
 
-			if (player2.getHealth() == 0 && !player2.isExploding() && !godMode) {
+			if (player2.getHealth() <= 0 && !player2.isExploding() && !godMode) {
 				player2.explode();
 			}
 
 			drawHUD(width, height, graphics2d);
 		} else {
 			backgroundSound.stop();
-			graphics2d.drawImage(Resources.getInstance().game_over, (int) ( ( width / 2 ) - Resources.getInstance().game_over_image_spec.center_x ), (int) ( ( height / 2 ) - Resources.getInstance().game_over_image_spec.center_y ), this);
+			graphics2d.drawImage(resources.game_over, (int) ( ( width / 2 ) - resources.game_over_image_spec.center_x ), (int) ( ( height / 2 ) - resources.game_over_image_spec.center_y ), this);
 
 			graphics2d.setColor(Color.WHITE);
-			graphics2d.drawString("ScoreBoard", (int) ( ( width / 2 ) - 98 ), (int) ( ( height / 2 ) + Resources.getInstance().game_over_image_spec.bottom ));
+			graphics2d.drawString("ScoreBoard", (int) ( ( width / 2 ) - 98 ), (int) ( ( height / 2 ) + resources.game_over_image_spec.bottom ));
 
 			if (!gameOver) {
 				int player1Score = Integer.parseInt(player1.getScore());
-				if (player1Score > Resources.scoreNumber1) {
-					Resources.score1 = "player1";
-					Resources.scoreNumber1 = (int) player1Score;
-				} else if (player1Score > Resources.scoreNumber2) {
-					Resources.score2 = "player1";
-					Resources.scoreNumber2 = (int) player1Score;
-				} else if (player1Score > Resources.scoreNumber3) {
-					Resources.score3 = "player1";
-					Resources.scoreNumber3 = (int) player1Score;
-				} else if (player1Score > Resources.scoreNumber4) {
-					Resources.score4 = "player1";
-					Resources.scoreNumber4 = (int) player1Score;
-				} else if (player1Score > Resources.scoreNumber5) {
-					Resources.score5 = "player1";
-					Resources.scoreNumber5 = (int) player1Score;
+				if (player1Score > resources.scoreNumber1) {
+					resources.score5 = resources.score4;
+					resources.scoreNumber5 = resources.scoreNumber4;
+
+					resources.score4 = resources.score3;
+					resources.scoreNumber4 = resources.scoreNumber3;
+
+					resources.score3 = resources.score2;
+					resources.scoreNumber3 = resources.scoreNumber2;
+
+					resources.score2 = resources.score1;
+					resources.scoreNumber2 = resources.scoreNumber1;
+
+					resources.score1 = "player1";
+					resources.scoreNumber1 = (int) player1Score;
+				} else if (player1Score > resources.scoreNumber2) {
+					resources.score5 = resources.score4;
+					resources.scoreNumber5 = resources.scoreNumber4;
+
+					resources.score4 = resources.score3;
+					resources.scoreNumber4 = resources.scoreNumber3;
+
+					resources.score3 = resources.score2;
+					resources.scoreNumber3 = resources.scoreNumber2;
+
+					resources.score2 = "player1";
+					resources.scoreNumber2 = (int) player1Score;
+				} else if (player1Score > resources.scoreNumber3) {
+					resources.score5 = resources.score4;
+					resources.scoreNumber5 = resources.scoreNumber4;
+
+					resources.score4 = resources.score3;
+					resources.scoreNumber4 = resources.scoreNumber3;
+
+					resources.score3 = "player1";
+					resources.scoreNumber3 = (int) player1Score;
+				} else if (player1Score > resources.scoreNumber4) {
+					resources.score5 = resources.score4;
+					resources.scoreNumber5 = resources.scoreNumber4;
+
+					resources.score4 = "player1";
+					resources.scoreNumber4 = (int) player1Score;
+				} else if (player1Score > resources.scoreNumber5) {
+					resources.score5 = "player1";
+					resources.scoreNumber5 = (int) player1Score;
 				}
+
 				int player2Score = Integer.parseInt(player2.getScore());
-				if (player2Score > Resources.scoreNumber1) {
-					Resources.score1 = "player2";
-					Resources.scoreNumber1 = (int) player2Score;
-				} else if (player2Score > Resources.scoreNumber2) {
-					Resources.score2 = "player2";
-					Resources.scoreNumber2 = (int) player2Score;
-				} else if (player2Score > Resources.scoreNumber3) {
-					Resources.score3 = "player2";
-					Resources.scoreNumber3 = (int) player2Score;
-				} else if (player2Score > Resources.scoreNumber4) {
-					Resources.score4 = "player2";
-					Resources.scoreNumber4 = (int) player2Score;
-				} else if (player2Score > Resources.scoreNumber5) {
-					Resources.score5 = "player2";
-					Resources.scoreNumber5 = (int) player2Score;
+				if (player2Score > resources.scoreNumber1) {
+					resources.score5 = resources.score4;
+					resources.scoreNumber5 = resources.scoreNumber4;
+
+					resources.score4 = resources.score3;
+					resources.scoreNumber4 = resources.scoreNumber3;
+
+					resources.score3 = resources.score2;
+					resources.scoreNumber3 = resources.scoreNumber2;
+
+					resources.score2 = resources.score1;
+					resources.scoreNumber2 = resources.scoreNumber1;
+
+					resources.score1 = "player2";
+					resources.scoreNumber1 = (int) player2Score;
+				} else if (player2Score > resources.scoreNumber2) {
+					resources.score5 = resources.score4;
+					resources.scoreNumber5 = resources.scoreNumber4;
+
+					resources.score4 = resources.score3;
+					resources.scoreNumber4 = resources.scoreNumber3;
+
+					resources.score3 = resources.score2;
+					resources.scoreNumber3 = resources.scoreNumber2;
+
+					resources.score2 = "player2";
+					resources.scoreNumber2 = (int) player2Score;
+				} else if (player2Score > resources.scoreNumber3) {
+					resources.score5 = resources.score4;
+					resources.scoreNumber5 = resources.scoreNumber4;
+
+					resources.score4 = resources.score3;
+					resources.scoreNumber4 = resources.scoreNumber3;
+
+					resources.score3 = "player2";
+					resources.scoreNumber3 = (int) player2Score;
+				} else if (player2Score > resources.scoreNumber4) {
+					resources.score5 = resources.score4;
+					resources.scoreNumber5 = resources.scoreNumber4;
+
+					resources.score4 = "player2";
+					resources.scoreNumber4 = (int) player2Score;
+				} else if (player2Score > resources.scoreNumber5) {
+					resources.score5 = "player2";
+					resources.scoreNumber5 = (int) player2Score;
 				}
 				gameOver = true;
 
-				Resources.writeTopScores();
+				resources.writeTopScores();
 			}
 
-			graphics2d.drawString("1: " + Resources.score1 + "          " + Resources.scoreNumber1, (int) ( ( width / 2 ) - 150 ), (int) ( ( height / 2 ) + Resources.getInstance().game_over_image_spec.bottom + 50 ));
-			graphics2d.drawString("2: " + Resources.score2 + "          " + Resources.scoreNumber2, (int) ( ( width / 2 ) - 150 ), (int) ( ( height / 2 ) + Resources.getInstance().game_over_image_spec.bottom + 100 ));
-			graphics2d.drawString("3: " + Resources.score3 + "          " + Resources.scoreNumber3, (int) ( ( width / 2 ) - 150 ), (int) ( ( height / 2 ) + Resources.getInstance().game_over_image_spec.bottom + 150 ));
-			graphics2d.drawString("4: " + Resources.score4 + "          " + Resources.scoreNumber4, (int) ( ( width / 2 ) - 150 ), (int) ( ( height / 2 ) + Resources.getInstance().game_over_image_spec.bottom + 200 ));
-			graphics2d.drawString("5: " + Resources.score5 + "          " + Resources.scoreNumber5, (int) ( ( width / 2 ) - 150 ), (int) ( ( height / 2 ) + Resources.getInstance().game_over_image_spec.bottom + 250 ));
+			graphics2d.drawString("1: " + resources.score1 + "          " + resources.scoreNumber1, (int) ( ( width / 2 ) - 150 ), (int) ( ( height / 2 )
+					+ resources.game_over_image_spec.bottom + 50 ));
+			graphics2d.drawString("2: " + resources.score2 + "          " + resources.scoreNumber2, (int) ( ( width / 2 ) - 150 ), (int) ( ( height / 2 )
+					+ resources.game_over_image_spec.bottom + 100 ));
+			graphics2d.drawString("3: " + resources.score3 + "          " + resources.scoreNumber3, (int) ( ( width / 2 ) - 150 ), (int) ( ( height / 2 )
+					+ resources.game_over_image_spec.bottom + 150 ));
+			graphics2d.drawString("4: " + resources.score4 + "          " + resources.scoreNumber4, (int) ( ( width / 2 ) - 150 ), (int) ( ( height / 2 )
+					+ resources.game_over_image_spec.bottom + 200 ));
+			graphics2d.drawString("5: " + resources.score5 + "          " + resources.scoreNumber5, (int) ( ( width / 2 ) - 150 ), (int) ( ( height / 2 )
+					+ resources.game_over_image_spec.bottom + 250 ));
 		}
 	}
 
 	private void drawBackgroundWithTileImage(int width, int height, Graphics2D graphics2d) {
-		int tileWidth = background.getImage().getWidth(this);
-		int tileHeight = background.getImage().getHeight(this);
+		int tileWidth = resources.backgroundAnimation.getImage().getWidth(this);
+		int tileHeight = resources.backgroundAnimation.getImage().getHeight(this);
 
 		int amountX = (int) ( width / tileWidth );
-		int amountY = (int) ( ( height - Resources.getInstance().hud_bottom_image_spec.bottom ) / tileHeight );
+		int amountY = (int) ( ( height - resources.hud_bottom_image_spec.bottom ) / tileHeight );
 
 		for (int i = 0; i <= amountX; i++) {
 			for (int j = -1; j <= amountY; j++) {
-				graphics2d.drawImage(background.getImage(), i * tileWidth, j * tileHeight + ( backgroundMovement % tileHeight ), tileWidth, tileHeight, this);
+				graphics2d.drawImage(resources.backgroundAnimation.getImage(), i * tileWidth, j
+						* tileHeight + ( backgroundMovement % tileHeight ), tileWidth, tileHeight, this);
 			}
 		}
 
@@ -428,39 +469,58 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 	}
 
 	private void drawHUD(int width, int height, Graphics2D graphics2d) {
-		ImageSpecification hud = Resources.getInstance().hud_bottom_image_spec;
+		ImageSpecification hud = resources.hud_bottom_image_spec;
 		int center_x = (int) hud.center_x;
 		int bottom = (int) hud.bottom;
 
-		int healtLeftX = (int) Resources.getInstance().hud_health_position1_image_spec.left;
-		int healtLeftY = (int) Resources.getInstance().hud_health_position1_image_spec.top;
-		int healtRightX = (int) Resources.getInstance().hud_health_position2_image_spec.left;
-		int healtRightY = (int) Resources.getInstance().hud_health_position2_image_spec.top;
+		int healtLeftX = (int) resources.hud_health_position1_image_spec.left;
+		int healtLeftY = (int) resources.hud_health_position1_image_spec.top;
+		int healtRightX = (int) resources.hud_health_position2_image_spec.left;
+		int healtRightY = (int) resources.hud_health_position2_image_spec.top;
 
-		int tileWidth = (int) Resources.getInstance().hud_tile_image_spec.right;
-		int tileHeight = (int) Resources.getInstance().hud_tile_image_spec.bottom;
+		int tileWidth = (int) resources.hud_tile_image_spec.right;
+		int tileHeight = (int) resources.hud_tile_image_spec.bottom;
 
 		int amountX = (int) ( width / tileWidth );
 		int amountY = ( bottom / tileHeight );
 
 		for (int i = 0; i <= amountX; i++) {
 			for (int j = 0; j <= amountY; j++) {
-				graphics2d.drawImage(Resources.getInstance().hud_tile, i * tileWidth, ( j + height - bottom ), tileWidth, tileHeight, this);
-				graphics2d.drawImage(Resources.getInstance().hud_tile, i * tileWidth, ( 32 * j + height - bottom ), tileWidth, tileHeight, this);
-				graphics2d.drawImage(Resources.getInstance().hud_tile, i * tileWidth, ( 64 * j + height - bottom ), tileWidth, tileHeight, this);
+				graphics2d.drawImage(resources.hud_tile, i * tileWidth, ( j + height - bottom ), tileWidth, tileHeight, this);
+				graphics2d.drawImage(resources.hud_tile, i * tileWidth, ( 32 * j + height - bottom ), tileWidth, tileHeight, this);
+				graphics2d.drawImage(resources.hud_tile, i * tileWidth, ( 64 * j + height - bottom ), tileWidth, tileHeight, this);
 			}
 		}
 
+		// Level
+		graphics2d.setColor(Color.WHITE);
+		graphics2d.drawString("Level: " + level, 10, 25);
+
 		// Hud
-		graphics2d.drawImage(Resources.getInstance().hud_bottom, ( width / 2 ) - center_x, height - bottom, this);
+		graphics2d.drawImage(resources.hud_bottom, ( width / 2 ) - center_x, height - bottom, this);
 
 		// Health bars
-		graphics2d.drawImage(player2.getHealthBar(), ( ( width / 2 ) - center_x ) + healtLeftX, ( height - bottom ) + healtLeftY, this);
-		graphics2d.drawImage(player1.getHealthBar(), ( ( width / 2 ) - center_x ) + healtRightX, ( height - bottom ) + healtRightY, this);
+		graphics2d.drawImage(player2.getHealthBar(), ( ( width / 2 ) - center_x ) + healtLeftX, ( height - bottom )
+				+ healtLeftY, this);
+		graphics2d.drawImage(player1.getHealthBar(), ( ( width / 2 ) - center_x ) + healtRightX, ( height - bottom )
+				+ healtRightY, this);
 
+		// Scores
 		graphics2d.setColor(Color.WHITE);
-		graphics2d.drawString(player1.getScore(), (int) ( width - 10 - ( metrics.stringWidth(player1.getScore()) ) + 2 ), (int) ( height - hud.bottom + 24 ));
+		graphics2d.drawString(player1.getScore(), (int) ( width - 10
+				- ( metrics.stringWidth(player1.getScore()) ) + 2 ), (int) ( height - hud.bottom + 24 ));
 		graphics2d.drawString(player2.getScore(), 10, (int) ( height - hud.bottom + 24 ));
+
+		// Player2 Lives
+		for (int i = 0; i < player2.getLives(); i++) {
+			graphics2d.drawImage(resources.life2, 32 * ( i ), (int) ( height - hud.bottom + 24 ), this);
+		}
+
+		// Player1 Lives
+		for (int i = 0; i < player1.getLives(); i++) {
+			graphics2d.drawImage(resources.life1, (int) ( width - 32 * ( i + 1 ) ), (int) ( height
+					- hud.bottom + 24 ), this);
+		}
 	}
 
 	private void generateEnemies(int enemies) {
@@ -718,9 +778,9 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 				break;
 
 			case KeyEvent.VK_Q:
-				player1.explode();
-				player2.explode();
-
+				player1.increaseLives(1);
+				player2.increaseLives(1);
+				godMode = true;
 				break;
 
 		// case KeyEvent.VK_1:
@@ -833,8 +893,9 @@ public class GameBase extends JApplet implements Runnable, KeyListener {
 		jFrame.addWindowListener(new WindowAdapter() {});
 		jFrame.getContentPane().add("Center", game);
 		jFrame.pack();
-		jFrame.setSize(new Dimension(800, 800));
+		jFrame.setSize(new Dimension(WIDTH, HEIGHT));
 		jFrame.setVisible(true);
+		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		game.start();
 	}
 }

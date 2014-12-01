@@ -3,9 +3,12 @@
  */
 package actors;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 
 import projectiles.Projectile;
+import shapes.CollisionCircle;
+import shapes.CollisionRectangle;
 import wingman.GameObject;
 import enums.AnimationType;
 import enums.GameObjectType;
@@ -15,6 +18,8 @@ import enums.GameObjectType;
  *
  */
 public abstract class Actor extends GameObject {
+
+	protected static Dimension dimension;
 
 	private boolean isMovingUp;
 	private boolean isMovingDown;
@@ -160,6 +165,43 @@ public abstract class Actor extends GameObject {
 		y_speed = 0;
 	}
 
+	public boolean isColliding(Actor actor) {
+		ArrayList<CollisionCircle> thisCircles = getCollisionCircles();
+		ArrayList<CollisionRectangle> thisRectangles = getCollisionRectangles();
+		ArrayList<CollisionCircle> actorCircles = actor.getCollisionCircles();
+		ArrayList<CollisionRectangle> actorRectangles = actor.getCollisionRectangles();
+
+		for (int i = 0; i < thisCircles.size(); i++) {
+			for (int j = 0; j < actorCircles.size(); j++) {
+				if (thisCircles.get(i).intersects(actorCircles.get(j).getBounds2D())) {
+					return true;
+				}
+			}
+
+			for (int j = 0; j < actorRectangles.size(); j++) {
+				if (thisCircles.get(i).intersects(actorRectangles.get(j))) {
+					return true;
+				}
+			}
+		}
+
+		for (int i = 0; i < thisRectangles.size(); i++) {
+			for (int j = 0; j < actorCircles.size(); j++) {
+				if (thisRectangles.get(i).intersects(actorCircles.get(j).getBounds2D())) {
+					return true;
+				}
+			}
+
+			for (int j = 0; j < actorRectangles.size(); j++) {
+				if (thisRectangles.get(i).intersects(actorRectangles.get(j))) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	public abstract void moveUp();
 
 	public abstract void moveDown();
@@ -185,6 +227,4 @@ public abstract class Actor extends GameObject {
 	public abstract void update(int width, int height);
 
 	public abstract boolean isVisible();
-
-	public abstract boolean isColliding(Actor actor);
 }

@@ -5,11 +5,8 @@ package actors;
 
 import java.applet.AudioClip;
 import java.awt.Image;
-import java.util.ArrayList;
 
 import projectiles.Projectile;
-import shapes.CollisionCircle;
-import shapes.CollisionRectangle;
 import wingman.Resources;
 import animations.Animation;
 import enums.AnimationType;
@@ -31,6 +28,8 @@ public class MainActor extends Actor {
 	private Image healthBar;
 
 	private int lives;
+
+	private int powerUp = 0;
 
 	private long score;
 
@@ -79,6 +78,19 @@ public class MainActor extends Actor {
 
 		if (y_pos >= height - bottom_edge - GAME_BORDER - HUD) {
 			y_pos = (int) ( height - bottom_edge - GAME_BORDER - HUD );
+		}
+
+		if (powerUp > 4) {
+			powerUp = 4;
+		}
+
+		if (powerUp < 0) {
+			powerUp = 0;
+		}
+
+		if (lives > 5) {
+			lives = 5;
+			score += 150;
 		}
 
 		for (int i = 0; i < getCollisionCircles().size(); i++) {
@@ -177,16 +189,62 @@ public class MainActor extends Actor {
 	@Override
 	public void firePrimary() {
 		if (canFirePrimary()) {
-			Projectile pShot = new Projectile(primaryWeapon, AnimationType.PLAYER1, x_pos, y_pos);
-			shots.add(pShot);
-			setCanFirePrimary(false);
+			switch (powerUp) {
+				case 1:
+					Projectile pShot1 = new Projectile(primaryWeapon, AnimationType.PLAYER1, x_pos - 10, y_pos, dimension);
+					Projectile pShot2 = new Projectile(primaryWeapon, AnimationType.PLAYER1, x_pos + 10, y_pos, dimension);
+					shots.add(pShot1);
+					shots.add(pShot2);
+					setCanFirePrimary(false);
+					break;
+				case 2:
+					Projectile pShotLeft = new Projectile(AnimationType.BULLET_LEFT, AnimationType.PLAYER1, x_pos, y_pos, dimension);
+					Projectile pShotMiddle = new Projectile(primaryWeapon, AnimationType.PLAYER1, x_pos, y_pos, dimension);
+					Projectile pShotRight = new Projectile(AnimationType.BULLET_RIGHT, AnimationType.PLAYER1, x_pos, y_pos, dimension);
+					shots.add(pShotLeft);
+					shots.add(pShotMiddle);
+					shots.add(pShotRight);
+					setCanFirePrimary(false);
+					break;
+				case 3:
+					Projectile pShotLeft1 = new Projectile(AnimationType.BULLET_LEFT, AnimationType.PLAYER1, x_pos, y_pos, dimension);
+					Projectile pShotMiddle1 = new Projectile(primaryWeapon, AnimationType.PLAYER1, x_pos - 10, y_pos, dimension);
+					Projectile pShotMiddle2 = new Projectile(primaryWeapon, AnimationType.PLAYER1, x_pos + 10, y_pos, dimension);
+					Projectile pShotRight1 = new Projectile(AnimationType.BULLET_RIGHT, AnimationType.PLAYER1, x_pos, y_pos, dimension);
+					shots.add(pShotLeft1);
+					shots.add(pShotMiddle1);
+					shots.add(pShotMiddle2);
+					shots.add(pShotRight1);
+					setCanFirePrimary(false);
+					break;
+				case 4:
+					Projectile pShotLeft2 = new Projectile(AnimationType.BULLET_LEFT, AnimationType.PLAYER1, x_pos, y_pos, dimension);
+					Projectile pShotLeft3 = new Projectile(AnimationType.BULLET_LEFT, AnimationType.PLAYER1, x_pos - 15, y_pos, dimension);
+					Projectile pShotMiddle3 = new Projectile(primaryWeapon, AnimationType.PLAYER1, x_pos - 10, y_pos, dimension);
+					Projectile pShotMiddle4 = new Projectile(primaryWeapon, AnimationType.PLAYER1, x_pos + 10, y_pos, dimension);
+					Projectile pShotRight2 = new Projectile(AnimationType.BULLET_RIGHT, AnimationType.PLAYER1, x_pos, y_pos, dimension);
+					Projectile pShotRight3 = new Projectile(AnimationType.BULLET_RIGHT, AnimationType.PLAYER1, x_pos + 15, y_pos, dimension);
+					shots.add(pShotLeft2);
+					shots.add(pShotLeft3);
+					shots.add(pShotMiddle3);
+					shots.add(pShotMiddle4);
+					shots.add(pShotRight2);
+					shots.add(pShotRight3);
+					setCanFirePrimary(false);
+					break;
+				default:
+					Projectile pShot = new Projectile(primaryWeapon, AnimationType.PLAYER1, x_pos, y_pos, dimension);
+					shots.add(pShot);
+					setCanFirePrimary(false);
+					break;
+			}
 		}
 	}
 
 	@Override
 	public void fireSecondary() {
 		if (canFireSecondary()) {
-			Projectile sShot = new Projectile(secondaryWeapon, AnimationType.PLAYER1, x_pos, y_pos);
+			Projectile sShot = new Projectile(secondaryWeapon, AnimationType.PLAYER1, x_pos, y_pos, dimension);
 			shots.add(sShot);
 			setCanFireSecondary(false);
 		}
@@ -254,7 +312,13 @@ public class MainActor extends Actor {
 					healthBar = Resources.getInstance().health1_5;
 					break;
 				case 0:
-					healthBar = Resources.getInstance().health6;
+					if (lives > 0) {
+						lives--;
+						healthBar = Resources.getInstance().health1;
+						this.health = 5;
+					} else {
+						healthBar = Resources.getInstance().health6;
+					}
 					break;
 			}
 		} else if (getAnimationType() == AnimationType.PLAYER2) {
@@ -275,7 +339,13 @@ public class MainActor extends Actor {
 					healthBar = Resources.getInstance().health2_5;
 					break;
 				case 0:
-					healthBar = Resources.getInstance().health6;
+					if (lives > 0) {
+						lives--;
+						healthBar = Resources.getInstance().health1;
+						this.health = 5;
+					} else {
+						healthBar = Resources.getInstance().health6;
+					}
 					break;
 			}
 		}
@@ -303,6 +373,13 @@ public class MainActor extends Actor {
 	}
 
 	/**
+	 * @param powerUp the powerUp to increase
+	 */
+	public void increasePowerUp(int powerUp) {
+		this.powerUp += powerUp;
+	}
+
+	/**
 	 * @return the score
 	 */
 	public String getScore() {
@@ -314,43 +391,5 @@ public class MainActor extends Actor {
 	 */
 	public void increaseScore(long score) {
 		this.score += score;
-	}
-
-	@Override
-	public boolean isColliding(Actor actor) {
-		ArrayList<CollisionCircle> playerCircles = getCollisionCircles();
-		ArrayList<CollisionRectangle> playerRectangles = getCollisionRectangles();
-		ArrayList<CollisionCircle> actorCircles = actor.getCollisionCircles();
-		ArrayList<CollisionRectangle> actorRectangles = actor.getCollisionRectangles();
-
-		for (int i = 0; i < playerCircles.size(); i++) {
-			for (int j = 0; j < actorCircles.size(); j++) {
-				if (playerCircles.get(i).intersects(actorCircles.get(j).getBounds2D())) {
-					return true;
-				}
-			}
-
-			for (int j = 0; j < actorRectangles.size(); j++) {
-				if (playerCircles.get(i).intersects(actorRectangles.get(j))) {
-					return true;
-				}
-			}
-		}
-
-		for (int i = 0; i < playerRectangles.size(); i++) {
-			for (int j = 0; j < actorCircles.size(); j++) {
-				if (playerRectangles.get(i).intersects(actorCircles.get(j).getBounds2D())) {
-					return true;
-				}
-			}
-
-			for (int j = 0; j < actorRectangles.size(); j++) {
-				if (playerRectangles.get(i).intersects(actorRectangles.get(j))) {
-					return true;
-				}
-			}
-		}
-
-		return false;
 	}
 }

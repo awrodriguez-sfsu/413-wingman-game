@@ -45,7 +45,7 @@ public abstract class GameObject {
 	public GameObject(AnimationType image, GameObjectType type, int x_pos, int y_pos) {
 		Resources.getInstance();
 
-		this.animation = GameBase.animations.get(image);
+		this.animation = Resources.animations.get(image);
 		this.isSolid = image.isSolid();
 		this.x_pos = x_pos;
 		this.y_pos = y_pos;
@@ -56,7 +56,7 @@ public abstract class GameObject {
 			collisionCircles = new ArrayList<CollisionCircle>();
 			collisionRectangles = new ArrayList<CollisionRectangle>();
 
-			specification = Resources.getSolidSpec(image.getName());
+			specification = Resources.getInstance().getSolidSpec(image.getName());
 			for (int i = 0; i < specification.shapes.size(); i++) {
 				if (specification.shapes.get(i).type.equals("rectangle")) {
 					collisionRectangles.add(new CollisionRectangle(specification.shapes.get(i).x, specification.shapes.get(i).y, specification.shapes.get(i).width, specification.shapes.get(i).height));
@@ -75,19 +75,16 @@ public abstract class GameObject {
 
 	public void draw(Graphics graphics, ImageObserver observer) {
 		graphics.drawImage(animation.getImage(), x_pos, y_pos, observer);
-		// if (isSolid) {
-		// for (int i = 0; i < collisionRectangles.size(); i++) {
-		// CollisionRectangle rectangle = (CollisionRectangle)
-		// collisionRectangles.get(i);
-		// graphics.drawRect((int) rectangle.getX(), (int) rectangle.getY(),
-		// (int) rectangle.getWidth(), (int) rectangle.getHeight());
-		// }
-		// for (int i = 0; i < collisionCircles.size(); i++) {
-		// CollisionCircle circle = (CollisionCircle) collisionCircles.get(i);
-		// graphics.drawOval((int) circle.getX(), (int) circle.getY(), (int)
-		// circle.getWidth(), (int) circle.getHeight());
-		// }
-		// }
+		if (isSolid && this.animation.equals(Resources.getInstance().powerUpAnimation)) {
+			for (int i = 0; i < collisionRectangles.size(); i++) {
+				CollisionRectangle rectangle = (CollisionRectangle) collisionRectangles.get(i);
+				graphics.drawRect((int) rectangle.getX(), (int) rectangle.getY(), (int) rectangle.getWidth(), (int) rectangle.getHeight());
+			}
+			for (int i = 0; i < collisionCircles.size(); i++) {
+				CollisionCircle circle = (CollisionCircle) collisionCircles.get(i);
+				graphics.drawOval((int) circle.getX(), (int) circle.getY(), (int) circle.getWidth(), (int) circle.getHeight());
+			}
+		}
 
 		animation.update(16, this);
 	}

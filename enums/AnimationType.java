@@ -21,12 +21,14 @@ public enum AnimationType {
 	PLAYER1(11, true, "player1"),
 	PLAYER2(12, true, "player2"),
 	POWER_UP(13, true, "power_up"),
-	ISLAND1(14, false, ""),
-	ISLAND2(15, false, ""),
-	ISLAND3(16, false, ""),
-	BACKGROUND(17, false, ""),
-	SMALL_EXPLOSION(18, false, ""),
-	LARGE_EXPLOSION(19, false, "");
+	LIFE1(14, true, "life1_pickup"),
+	LIFE2(15, true, "life2_pickup"),
+	ISLAND1(16, false, ""),
+	ISLAND2(17, false, ""),
+	ISLAND3(18, false, ""),
+	BACKGROUND(19, false, ""),
+	SMALL_EXPLOSION(20, false, ""),
+	LARGE_EXPLOSION(21, false, "");
 
 	private final int type;
 	private final boolean solid;

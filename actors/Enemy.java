@@ -7,6 +7,7 @@ import java.applet.AudioClip;
 import java.awt.Dimension;
 import java.util.Random;
 
+import background.ItemDrop;
 import projectiles.Projectile;
 import wingman.GameBase;
 import wingman.Resources;
@@ -24,13 +25,9 @@ public class Enemy extends Actor {
 
 	private int actionTime = 0;
 
-	private int primaryVolley = 4;
+	private int primaryVolley = 2;
 
-	private int secondaryVolley = 2;
-
-	private AnimationType type;
-
-	private Dimension dimension;
+	private int secondaryVolley = 1;
 
 	private Random generator;
 
@@ -52,9 +49,8 @@ public class Enemy extends Actor {
 			MOVEMENT_SPEED = 2f;
 		}
 
-		this.dimension = dimension;
+		Enemy.dimension = dimension;
 		this.generator = generator;
-		this.type = image;
 
 		this.primaryWeapon = primaryWeapon;
 		this.secondaryWeapon = secondaryWeapon;
@@ -62,7 +58,7 @@ public class Enemy extends Actor {
 
 	@Override
 	public boolean isVisible() {
-		if (type == AnimationType.ENEMY4) {
+		if (getAnimationType() == AnimationType.ENEMY4) {
 			return ( y_pos < -bottom_edge && y_pos > dimension.height - HUD );
 		} else {
 			return ( y_pos > dimension.height - HUD + bottom_edge );
@@ -71,7 +67,7 @@ public class Enemy extends Actor {
 
 	@Override
 	public boolean inPlay() {
-		if (type == AnimationType.ENEMY4) {
+		if (getAnimationType() == AnimationType.ENEMY4) {
 			return ( y_pos > -bottom_edge );
 		} else {
 			return ( y_pos < dimension.height - HUD );
@@ -82,29 +78,29 @@ public class Enemy extends Actor {
 	public void update(int width, int height) {
 		dimension = GameBase.getDimension();
 
-		if (actionTime > 1000) {
+		if (actionTime > 10000 - ( GameBase.level * 1000 )) {
 			int action = generator.nextInt(5) + 1;
 			switch (action) {
 				case 1: // Main movement direction
 					if (!isMovingLeft() && !isMovingRight()) {
-						setMovingUp(type == AnimationType.ENEMY4);
-						setMovingDown(type == AnimationType.ENEMY4);
+						setMovingUp(getAnimationType() == AnimationType.ENEMY4);
+						setMovingDown(getAnimationType() == AnimationType.ENEMY4);
 						setMovingLeft(false);
 						setMovingRight(false);
 					}
 					break;
 				case 2: // Left movement
 					if (!isMovingLeft() && !isMovingRight()) {
-						setMovingUp(type == AnimationType.ENEMY4);
-						setMovingDown(type == AnimationType.ENEMY4);
+						setMovingUp(getAnimationType() == AnimationType.ENEMY4);
+						setMovingDown(getAnimationType() == AnimationType.ENEMY4);
 						setMovingLeft(true);
 						setMovingRight(false);
 					}
 					break;
 				case 3: // Right movement
 					if (!isMovingLeft() && !isMovingRight()) {
-						setMovingUp(type == AnimationType.ENEMY4);
-						setMovingDown(type == AnimationType.ENEMY4);
+						setMovingUp(getAnimationType() == AnimationType.ENEMY4);
+						setMovingDown(getAnimationType() == AnimationType.ENEMY4);
 						setMovingLeft(false);
 						setMovingRight(true);
 					}
@@ -169,12 +165,12 @@ public class Enemy extends Actor {
 
 	@Override
 	public boolean isMovingUp() {
-		return ( type == AnimationType.ENEMY4 ) && !isExploding();
+		return ( getAnimationType() == AnimationType.ENEMY4 ) && !isExploding();
 	}
 
 	@Override
 	public boolean isMovingDown() {
-		return !( type == AnimationType.ENEMY4 ) && !isExploding();
+		return !( getAnimationType() == AnimationType.ENEMY4 ) && !isExploding();
 	}
 
 	/*
@@ -248,7 +244,7 @@ public class Enemy extends Actor {
 	@Override
 	public void firePrimary() {
 		if (canFirePrimary()) {
-			Projectile pShot = new Projectile(primaryWeapon, type, x_pos, y_pos);
+			Projectile pShot = new Projectile(primaryWeapon, getAnimationType(), x_pos, y_pos, dimension);
 
 			shots.add(pShot);
 
@@ -267,14 +263,16 @@ public class Enemy extends Actor {
 	@Override
 	public void fireSecondary() {
 		int spread = 20;
-		if (type == AnimationType.ENEMY4) {
+		if (getAnimationType() == AnimationType.ENEMY4) {
 			spread = -spread;
 		}
 
 		if (canFireSecondary()) {
-			Projectile sShot = new Projectile(secondaryWeapon, type, x_pos, y_pos);
-			Projectile sShot1 = new Projectile(secondaryWeapon, type, x_pos, y_pos + spread);
-			Projectile sShot2 = new Projectile(secondaryWeapon, type, x_pos, y_pos + spread + spread);
+			Projectile sShot = new Projectile(secondaryWeapon, getAnimationType(), x_pos, y_pos, dimension);
+			Projectile sShot1 = new Projectile(secondaryWeapon, getAnimationType(), x_pos, y_pos
+					+ spread, dimension);
+			Projectile sShot2 = new Projectile(secondaryWeapon, getAnimationType(), x_pos, y_pos
+					+ spread + spread, dimension);
 
 			shots.add(sShot);
 			shots.add(sShot1);
@@ -289,7 +287,18 @@ public class Enemy extends Actor {
 	}
 
 	public void checkDrop() {
-		System.out.println("drop something??");
+		int drop = generator.nextInt(100) + 1;
+
+		if (drop <= 3) {
+			ItemDrop itemDrop = new ItemDrop(AnimationType.POWER_UP, GameObjectType.POWERUP, x_pos, y_pos, dimension);
+			GameBase.drops.add(itemDrop);
+		} else if (drop == 10) {
+			ItemDrop itemDrop = new ItemDrop(AnimationType.LIFE1, GameObjectType.POWERUP, x_pos, y_pos, dimension);
+			GameBase.drops.add(itemDrop);
+		} else if (drop == 20) {
+			ItemDrop itemDrop = new ItemDrop(AnimationType.LIFE2, GameObjectType.POWERUP, x_pos, y_pos, dimension);
+			GameBase.drops.add(itemDrop);
+		}
 	}
 
 	/*
@@ -314,14 +323,5 @@ public class Enemy extends Actor {
 		animation.addFrame(Resources.getInstance().explosion1_6, 250);
 
 		setAnimation(animation);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see actors.Actor#isColliding(actors.Actor)
-	 */
-	@Override
-	public boolean isColliding(Actor actor) {
-		return false;
 	}
 }
